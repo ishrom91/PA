@@ -7,6 +7,7 @@ import {
   hasForbiddenWords,
   isPhronesisWarning,
 } from '../data/practices';
+import { hapticWarning } from '../utils/haptics';
 
 type Practice = 'phronesis' | 'threeQuestions' | 'empathy' | 'languageGame' | null;
 
@@ -152,15 +153,16 @@ function PhronesisModal({
         <button
           className="btn-primary w-full"
           disabled={!character.trim() || !autonomy.trim() || !publicity.trim()}
-          onClick={() =>
+          onClick={() => {
+            if (warning) hapticWarning();
             onSave({
               character: character.trim(),
               autonomy: autonomy.trim(),
               publicity: publicity.trim(),
               warningShown: warning,
               completedAt: new Date().toISOString(),
-            })
-          }
+            });
+          }}
         >
           Записать
         </button>

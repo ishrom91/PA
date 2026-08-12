@@ -111,4 +111,5 @@ export interface AppStorage {
   notes: Note[];
   yearTrait?: YearTrait;
   initializedAt: string;
+  onboardingCompleted?: boolean;
 }

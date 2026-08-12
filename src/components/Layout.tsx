@@ -45,7 +45,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-40">
-        <div className="flex flex-col h-full m-3 mr-0 bg-surface/90 backdrop-blur-2xl rounded-4xl shadow-card border border-white/50 overflow-hidden">
+        <div className="flex flex-col h-full m-3 mr-0 bg-surface/90 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-4xl shadow-card dark:shadow-card-dark border border-white/50 dark:border-white/10 overflow-hidden">
           <div className="p-6 pb-4">
             <Link to="/" className="block">
               <span className="text-[11px] font-semibold uppercase tracking-widest text-terracotta">
@@ -73,8 +73,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
-          <div className="p-4 mx-3 mb-3 rounded-2xl bg-cream/80">
-            <p className="text-[12px] text-graphite-secondary leading-relaxed">
+          <div className="p-4 mx-3 mb-3 rounded-2xl bg-cream/80 dark:bg-cream-dark/80">
+            <p className="text-[12px] text-graphite-secondary dark:text-graphite-secondary-dark leading-relaxed">
               Дневник практик, не чек-лист. Пропуск — не провал.
             </p>
           </div>
@@ -89,7 +89,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile tab bar — iOS-style floating glass */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 pointer-events-none">
-        <div className="pointer-events-auto bg-surface/85 backdrop-blur-2xl rounded-3xl shadow-nav border border-white/60 flex items-stretch px-1 py-1">
+        <div className="pointer-events-auto bg-surface/85 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-3xl shadow-nav dark:shadow-nav-dark border border-white/60 dark:border-white/10 flex items-stretch px-1 py-1">
           {PRIMARY_TABS.map(({ path, label, Icon }) => {
             const active = isActive(location.pathname, path);
             return (
@@ -127,7 +127,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             className="absolute inset-0 bg-graphite/25 backdrop-blur-sm animate-fade-in"
             onClick={() => setMoreOpen(false)}
           />
-          <div className="absolute bottom-0 inset-x-0 bg-surface rounded-t-4xl shadow-float animate-slide-up pb-[calc(1rem+env(safe-area-inset-bottom))]">
+          <div className="absolute bottom-0 inset-x-0 bg-surface dark:bg-surface-dark rounded-t-4xl shadow-float dark:shadow-float-dark animate-slide-up pb-[calc(1rem+env(safe-area-inset-bottom))]">
             <div className="w-10 h-1 bg-paper rounded-full mx-auto mt-3 mb-4" />
             <p className="px-5 text-[13px] font-semibold uppercase tracking-wider text-graphite-secondary mb-3">
               Разделы

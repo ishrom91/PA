@@ -116,5 +116,6 @@ export function createInitialStorage(): AppStorage {
     journal: [],
     notes: [],
     initializedAt: today,
+    onboardingCompleted: false,
   };
 }

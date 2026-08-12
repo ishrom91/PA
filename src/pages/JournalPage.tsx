@@ -2,72 +2,108 @@ import { useState } from 'react';
 import { useApp } from '../context/AppStateContext';
 import { formatDateRu, formatDateShort } from '../utils/date';
 import { LANGUAGE_GAMES } from '../data/practices';
+import PageHeader from '../components/PageHeader';
+import { usePullToRefresh } from '../hooks/usePullToRefresh';
+import { hapticLight } from '../utils/haptics';
 
 export default function JournalPage() {
-  const { journal } = useApp();
+  const { journal, refreshJournal } = useApp();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const sorted = [...journal].sort((a, b) => b.date.localeCompare(a.date));
   const selected = selectedDate ? journal.find((e) => e.date === selectedDate) : null;
 
+  const { pullDistance, refreshing, handlers } = usePullToRefresh({
+    onRefresh: async () => {
+      hapticLight();
+      refreshJournal();
+      setRefreshKey((k) => k + 1);
+      await new Promise((r) => setTimeout(r, 500));
+    },
+  });
+
   if (selected) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 animate-fade-in">
         <button
+          type="button"
           onClick={() => setSelectedDate(null)}
-          className="text-sm text-terracotta hover:underline"
+          className="btn-ghost !px-0"
         >
           ← Все записи
         </button>
-        <h1 className="font-display text-2xl">{formatDateRu(selected.date)}</h1>
+        <PageHeader title={formatDateRu(selected.date)} />
         <DayDetail entry={selected} />
       </div>
     );
   }
 
-  if (sorted.length === 0) {
-    return (
-      <div className="space-y-4">
-        <h1 className="font-display text-2xl">Журнал</h1>
-        <p className="text-graphite/60 text-sm">
-          Записей пока нет. Начните с утренней практики — без осуждения за пропуски.
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      <h1 className="font-display text-2xl">Журнал</h1>
-      <div className="space-y-2">
-        {sorted.map((entry) => {
-          const parts = [
-            entry.morning && 'утро',
-            entry.day && Object.keys(entry.day).length > 0 && 'день',
-            entry.evening && 'вечер',
-          ].filter(Boolean);
-
-          return (
-            <button
-              key={entry.date}
-              onClick={() => setSelectedDate(entry.date)}
-              className="card w-full text-left hover:border-terracotta/30 transition-colors flex items-center justify-between"
-            >
-              <span className="font-medium">{formatDateShort(entry.date)}</span>
-              <span className="text-xs text-graphite/50">
-                {parts.length > 0 ? parts.join(' · ') : 'пустой день'}
-              </span>
-            </button>
-          );
-        })}
+    <div
+      className="space-y-6"
+      {...handlers}
+      key={refreshKey}
+    >
+      <div
+        className="flex justify-center overflow-hidden transition-[height] duration-200"
+        style={{ height: pullDistance > 0 ? pullDistance : refreshing ? 40 : 0 }}
+      >
+        <div className={`flex items-center gap-2 text-[13px] text-graphite-secondary dark:text-graphite-secondary-dark ${refreshing ? 'animate-pulse' : ''}`}>
+          {refreshing ? (
+            <>
+              <span className="w-4 h-4 border-2 border-terracotta/30 border-t-terracotta rounded-full animate-spin" />
+              Обновление…
+            </>
+          ) : pullDistance > 50 ? (
+            'Отпустите для обновления'
+          ) : pullDistance > 0 ? (
+            'Потяните вниз'
+          ) : null}
+        </div>
       </div>
+
+      <PageHeader
+        title="Журнал"
+        subtitle={
+          sorted.length === 0
+            ? 'Записей пока нет. Начните с утренней практики — без осуждения за пропуски.'
+            : `${sorted.length} ${sorted.length === 1 ? 'день' : sorted.length < 5 ? 'дня' : 'дней'} с записями`
+        }
+      />
+
+      {sorted.length === 0 ? null : (
+        <div className="space-y-2">
+          {sorted.map((entry) => {
+            const parts = [
+              entry.morning && 'утро',
+              entry.day && Object.keys(entry.day).length > 0 && 'день',
+              entry.evening && 'вечер',
+            ].filter(Boolean);
+
+            return (
+              <button
+                key={entry.date}
+                type="button"
+                onClick={() => setSelectedDate(entry.date)}
+                className="card w-full text-left !p-4 flex items-center justify-between hover:shadow-float active:scale-[0.99] transition-all"
+              >
+                <span className="font-medium text-[15px]">{formatDateShort(entry.date)}</span>
+                <span className="text-[13px] text-graphite-secondary dark:text-graphite-secondary-dark">
+                  {parts.length > 0 ? parts.join(' · ') : 'пустой день'}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
 
 function DayDetail({ entry }: { entry: import('../types').JournalEntry }) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {entry.virtueIntention && (
         <Section title="Намерение добродетели">
           <p>{entry.virtueIntention}</p>
@@ -96,7 +132,7 @@ function DayDetail({ entry }: { entry: import('../types').JournalEntry }) {
             <Sub title="Phronesis">
               <p>{entry.day.phronesis.character}</p>
               {entry.day.phronesis.warningShown && (
-                <p className="text-red-700/70 text-sm italic">Предупреждение показано</p>
+                <p className="text-red-600 dark:text-red-400 text-sm italic">Предупреждение показано</p>
               )}
             </Sub>
           )}
@@ -139,7 +175,7 @@ function DayDetail({ entry }: { entry: import('../types').JournalEntry }) {
       )}
 
       {!entry.morning && !entry.day && !entry.evening && !entry.virtueIntention && (
-        <p className="text-graphite/50 text-sm italic">Пустой день.</p>
+        <p className="text-graphite-secondary dark:text-graphite-secondary-dark text-sm italic">Пустой день.</p>
       )}
     </div>
   );
@@ -148,7 +184,7 @@ function DayDetail({ entry }: { entry: import('../types').JournalEntry }) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="card space-y-3">
-      <h2 className="font-display text-lg">{title}</h2>
+      <h2 className="section-title">{title}</h2>
       {children}
     </div>
   );
@@ -157,7 +193,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Sub({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="text-sm space-y-1">
-      <p className="text-graphite/50 text-xs uppercase tracking-wide">{title}</p>
+      <p className="label-text !mb-1">{title}</p>
       {children}
     </div>
   );

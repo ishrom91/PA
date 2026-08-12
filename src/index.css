@@ -5,10 +5,11 @@
 @layer base {
   html {
     -webkit-tap-highlight-color: transparent;
+    color-scheme: light dark;
   }
 
   body {
-    @apply bg-cream text-graphite font-sans antialiased;
+    @apply bg-cream dark:bg-cream-dark text-graphite dark:text-graphite-dark font-sans antialiased;
     font-feature-settings: 'ss01' on, 'cv01' on;
   }
 
@@ -25,11 +26,11 @@
 
 @layer components {
   .card {
-    @apply bg-surface rounded-3xl p-5 shadow-card;
+    @apply bg-surface dark:bg-surface-dark rounded-3xl p-5 shadow-card dark:shadow-card-dark;
   }
 
   .card-glass {
-    @apply bg-surface/80 backdrop-blur-xl rounded-3xl p-5 shadow-card border border-white/60;
+    @apply bg-surface/80 dark:bg-surface-dark/80 backdrop-blur-xl rounded-3xl p-5 shadow-card dark:shadow-card-dark border border-white/60 dark:border-white/10;
   }
 
   .btn-primary {
@@ -39,51 +40,48 @@
   }
 
   .btn-secondary {
-    @apply bg-surface text-graphite px-5 py-3.5 rounded-2xl font-medium text-[15px]
-           shadow-card hover:bg-cream active:scale-[0.98] transition-all duration-150;
+    @apply bg-surface dark:bg-surface-dark text-graphite dark:text-graphite-dark px-5 py-3.5 rounded-2xl font-medium text-[15px]
+           shadow-card dark:shadow-card-dark hover:bg-cream dark:hover:bg-cream-dark active:scale-[0.98] transition-all duration-150;
   }
 
   .btn-ghost {
     @apply text-terracotta px-4 py-2 rounded-xl font-medium text-[15px]
-           hover:bg-terracotta-soft active:scale-[0.98] transition-all duration-150;
+           hover:bg-terracotta-soft dark:hover:bg-terracotta-soft-dark active:scale-[0.98] transition-all duration-150;
   }
 
   .input-field {
-    @apply w-full bg-cream/80 border-0 rounded-2xl px-4 py-3.5
-           text-graphite text-[15px] placeholder:text-graphite-tertiary
+    @apply w-full bg-cream/80 dark:bg-cream-dark/80 border-0 rounded-2xl px-4 py-3.5
+           text-graphite dark:text-graphite-dark text-[15px]
+           placeholder:text-graphite-tertiary dark:placeholder:text-graphite-tertiary-dark
            focus:outline-none focus:ring-2 focus:ring-terracotta/25 transition-shadow;
   }
 
   .label-text {
-    @apply text-[13px] font-medium text-graphite-secondary mb-2 block uppercase tracking-wide;
+    @apply text-[13px] font-medium text-graphite-secondary dark:text-graphite-secondary-dark mb-2 block uppercase tracking-wide;
   }
 
   .page-title {
-    @apply text-[28px] md:text-[32px] font-semibold tracking-tight leading-tight;
+    @apply text-[28px] md:text-[32px] font-semibold tracking-tight leading-tight text-graphite dark:text-graphite-dark;
   }
 
   .page-subtitle {
-    @apply text-[15px] text-graphite-secondary leading-relaxed mt-1;
+    @apply text-[15px] text-graphite-secondary dark:text-graphite-secondary-dark leading-relaxed mt-1;
   }
 
   .section-title {
-    @apply text-[17px] font-semibold tracking-tight;
-  }
-
-  .nav-tab-active {
-    @apply text-terracotta;
-  }
-
-  .chip {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-medium;
+    @apply text-[17px] font-semibold tracking-tight text-graphite dark:text-graphite-dark;
   }
 
   .chip-done {
-    @apply chip bg-olive-soft text-olive;
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-medium bg-olive-soft dark:bg-olive-soft-dark text-olive;
   }
 
   .chip-pending {
-    @apply chip bg-paper text-graphite-secondary;
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-medium bg-paper dark:bg-paper-dark text-graphite-secondary dark:text-graphite-secondary-dark;
+  }
+
+  .hint-box {
+    @apply text-[13px] text-graphite-secondary dark:text-graphite-secondary-dark bg-cream dark:bg-cream-dark rounded-2xl px-4 py-3 leading-relaxed;
   }
 }
 
@@ -106,7 +104,7 @@
 }
 
 .markdown-body blockquote {
-  @apply border-l-[3px] border-terracotta/30 pl-4 italic text-graphite-secondary my-4 rounded-r-lg bg-terracotta-soft/50 py-2;
+  @apply border-l-[3px] border-terracotta/30 pl-4 italic text-graphite-secondary dark:text-graphite-secondary-dark my-4 rounded-r-lg bg-terracotta-soft dark:bg-terracotta-soft-dark py-2;
 }
 
 .markdown-body ul {
@@ -127,21 +125,27 @@
 
 .markdown-body th,
 .markdown-body td {
-  @apply border border-paper px-3 py-2.5 text-left;
+  @apply border border-paper dark:border-paper-dark px-3 py-2.5 text-left;
 }
 
 .markdown-body th {
-  @apply bg-cream font-medium;
+  @apply bg-cream dark:bg-cream-dark font-medium;
 }
 
 .markdown-body hr {
-  @apply border-paper my-6;
+  @apply border-paper dark:border-paper-dark my-6;
 }
 
 .markdown-body code {
-  @apply bg-cream px-1.5 py-0.5 rounded-lg text-sm font-mono;
+  @apply bg-cream dark:bg-cream-dark px-1.5 py-0.5 rounded-lg text-sm font-mono;
 }
 
 .markdown-body pre {
-  @apply bg-cream rounded-2xl p-4 overflow-x-auto text-sm my-4;
+  @apply bg-cream dark:bg-cream-dark rounded-2xl p-4 overflow-x-auto text-sm my-4;
+}
+
+@media (prefers-color-scheme: dark) {
+  .markdown-body {
+    @apply text-graphite-dark/90;
+  }
 }

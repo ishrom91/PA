@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppStateContext';
 import { getVirtueForMonth } from '../data/virtues';
 import type { MorningEntry } from '../types';
 import PageHeader from '../components/PageHeader';
 import StepProgress from '../components/StepProgress';
+import StepPanel from '../components/StepPanel';
+import { hapticLight } from '../utils/haptics';
 
 type Step = 1 | 2 | 3 | 'summary';
 
@@ -27,6 +30,11 @@ export default function MorningPage() {
   const canNext1 = decision.trim() && effort.trim() && attitude.trim();
   const canNext2 = person.trim() && values.trim() && benefit.trim();
   const canNext3 = situation.trim();
+
+  const goStep = (s: Step) => {
+    hapticLight();
+    setStep(s);
+  };
 
   const handleSave = () => {
     const entry: MorningEntry = {
@@ -59,7 +67,7 @@ export default function MorningPage() {
           </SummaryBlock>
         </div>
         <div className="flex gap-3">
-          <button className="btn-secondary flex-1" onClick={() => setStep(1)}>
+          <button className="btn-secondary flex-1" onClick={() => goStep(1)}>
             Изменить
           </button>
           <button className="btn-primary flex-1" onClick={() => navigate('/')}>
@@ -78,58 +86,58 @@ export default function MorningPage() {
         <StepProgress current={step} total={3} labels={stepLabels} />
       )}
 
-      {step === 1 && (
-        <>
-          <PageHeader eyebrow="Эпиктет" title="Что в твоей власти сегодня?" />
-          <div className="space-y-4">
-            <Field label="Решение, которое я приму сегодня" value={decision} onChange={setDecision} />
-            <Field label="Усилие, которое я приложу" value={effort} onChange={setEffort} />
-            <Field label="Отношение, которое я выберу" value={attitude} onChange={setAttitude} />
-          </div>
-          <p className="text-[13px] text-graphite-secondary bg-cream rounded-2xl px-4 py-3 leading-relaxed">
-            Рынок, мнения, погода, чужие поступки — вне твоей власти. Не трать на них энергию.
-          </p>
-          <button className="btn-primary w-full" disabled={!canNext1} onClick={() => setStep(2)}>
-            Далее
-          </button>
-        </>
-      )}
-
-      {step === 2 && (
-        <>
-          <PageHeader eyebrow="Мизес" title="Кому ты сегодня дашь ценность?" />
-          <div className="space-y-4">
-            <Field label="Кто этот человек?" value={person} onChange={setPerson} />
-            <Field label="Что он ценит?" value={values} onChange={setValues} />
-            <Field label="Какую выгоду ты ему дашь?" value={benefit} onChange={setBenefit} />
-          </div>
-          <div className="flex gap-3">
-            <button className="btn-secondary flex-1" onClick={() => setStep(1)}>Назад</button>
-            <button className="btn-primary flex-1" disabled={!canNext2} onClick={() => setStep(3)}>Далее</button>
-          </div>
-        </>
-      )}
-
-      {step === 3 && (
-        <>
-          <PageHeader
-            eyebrow="Аристотель"
-            title="Добродетель дня"
-            subtitle={virtue.name}
-          />
-          <Field
-            label="В какой ситуации ты проявишь её сегодня?"
-            value={situation}
-            onChange={setSituation}
-          />
-          <div className="flex gap-3">
-            <button className="btn-secondary flex-1" onClick={() => setStep(2)}>Назад</button>
-            <button className="btn-primary flex-1" disabled={!canNext3} onClick={handleSave}>
-              Записать
+      <AnimatePresence mode="wait">
+        {step === 1 && (
+          <StepPanel stepKey={1}>
+            <PageHeader eyebrow="Эпиктет" title="Что в твоей власти сегодня?" />
+            <div className="space-y-4 mt-6">
+              <Field label="Решение, которое я приму сегодня" value={decision} onChange={setDecision} />
+              <Field label="Усилие, которое я приложу" value={effort} onChange={setEffort} />
+              <Field label="Отношение, которое я выберу" value={attitude} onChange={setAttitude} />
+            </div>
+            <p className="hint-box mt-4">
+              Рынок, мнения, погода, чужие поступки — вне твоей власти. Не трать на них энергию.
+            </p>
+            <button className="btn-primary w-full mt-6" disabled={!canNext1} onClick={() => goStep(2)}>
+              Далее
             </button>
-          </div>
-        </>
-      )}
+          </StepPanel>
+        )}
+
+        {step === 2 && (
+          <StepPanel stepKey={2}>
+            <PageHeader eyebrow="Мизес" title="Кому ты сегодня дашь ценность?" />
+            <div className="space-y-4 mt-6">
+              <Field label="Кто этот человек?" value={person} onChange={setPerson} />
+              <Field label="Что он ценит?" value={values} onChange={setValues} />
+              <Field label="Какую выгоду ты ему дашь?" value={benefit} onChange={setBenefit} />
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button className="btn-secondary flex-1" onClick={() => goStep(1)}>Назад</button>
+              <button className="btn-primary flex-1" disabled={!canNext2} onClick={() => goStep(3)}>Далее</button>
+            </div>
+          </StepPanel>
+        )}
+
+        {step === 3 && (
+          <StepPanel stepKey={3}>
+            <PageHeader eyebrow="Аристотель" title="Добродетель дня" subtitle={virtue.name} />
+            <div className="mt-6">
+              <Field
+                label="В какой ситуации ты проявишь её сегодня?"
+                value={situation}
+                onChange={setSituation}
+              />
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button className="btn-secondary flex-1" onClick={() => goStep(2)}>Назад</button>
+              <button className="btn-primary flex-1" disabled={!canNext3} onClick={handleSave}>
+                Записать
+              </button>
+            </div>
+          </StepPanel>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

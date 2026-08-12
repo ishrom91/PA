@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useEffect } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import type {
   AppStorage,
@@ -15,6 +15,7 @@ import {
   integrateRule,
 } from '../utils/rules';
 import { todayKey } from '../utils/date';
+import { hapticSuccess } from '../utils/haptics';
 
 const STORAGE_KEY = 'philosophia-activa';
 
@@ -25,23 +26,13 @@ function generateId(): string {
 export function useAppState() {
   const [storage, setStorage] = useLocalStorage<AppStorage>(
     STORAGE_KEY,
-    createInitialStorage(),
+    { ...createInitialStorage(), onboardingCompleted: false },
   );
 
   const ruleStatuses = useMemo(
     () => computeRuleStatuses(storage.ruleStatuses),
     [storage.ruleStatuses],
   );
-
-  useEffect(() => {
-    const computed = computeRuleStatuses(storage.ruleStatuses);
-    const changed = Object.keys(computed).some(
-      (k) => computed[Number(k)].status !== storage.ruleStatuses[Number(k)]?.status,
-    );
-    if (changed) {
-      setStorage((prev) => ({ ...prev, ruleStatuses: computed }));
-    }
-  }, [storage.ruleStatuses, setStorage]);
 
   const today = todayKey();
 
@@ -69,6 +60,7 @@ export function useAppState() {
   const saveMorning = useCallback(
     (entry: MorningEntry) => {
       upsertToday({ morning: entry });
+      hapticSuccess();
     },
     [upsertToday],
   );
@@ -86,6 +78,7 @@ export function useAppState() {
             : [...prev.journal, updated];
         return { ...prev, journal };
       });
+      hapticSuccess();
     },
     [setStorage, today],
   );
@@ -93,6 +86,7 @@ export function useAppState() {
   const saveEvening = useCallback(
     (entry: EveningEntry) => {
       upsertToday({ evening: entry });
+      hapticSuccess();
     },
     [upsertToday],
   );
@@ -104,12 +98,17 @@ export function useAppState() {
     [upsertToday],
   );
 
+  const completeOnboarding = useCallback(() => {
+    setStorage((prev) => ({ ...prev, onboardingCompleted: true }));
+  }, [setStorage]);
+
   const activateRuleByNumber = useCallback(
     (n: number) => {
       setStorage((prev) => ({
         ...prev,
         ruleStatuses: activateRule(prev.ruleStatuses, n),
       }));
+      hapticSuccess();
     },
     [setStorage],
   );
@@ -120,6 +119,7 @@ export function useAppState() {
         ...prev,
         ruleStatuses: integrateRule(prev.ruleStatuses, n),
       }));
+      hapticSuccess();
     },
     [setStorage],
   );
@@ -135,6 +135,7 @@ export function useAppState() {
         ...prev,
         notes: [newNote, ...prev.notes],
       }));
+      hapticSuccess();
       return newNote.id;
     },
     [setStorage],
@@ -155,6 +156,10 @@ export function useAppState() {
     [storage.journal],
   );
 
+  const refreshJournal = useCallback(() => {
+    setStorage((prev) => ({ ...prev, journal: [...prev.journal] }));
+  }, [setStorage]);
+
   return {
     storage,
     ruleStatuses,
@@ -164,13 +169,16 @@ export function useAppState() {
     saveDayPractice,
     saveEvening,
     saveVirtueIntention,
+    completeOnboarding,
     activateRuleByNumber,
     integrateRuleByNumber,
     addNote,
     removeNote,
     getEntryByDate,
+    refreshJournal,
     journal: storage.journal,
     notes: storage.notes,
+    onboardingCompleted: storage.onboardingCompleted ?? false,
   };
 }
 
