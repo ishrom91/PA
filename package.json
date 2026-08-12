@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "node scripts/generate-pwa-icons.mjs && tsc --noEmit && vite build",
     "preview": "vite preview",
     "generate:book": "node scripts/generate-bookData.mjs --from-docx"
   },
@@ -23,6 +23,8 @@
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.7.2",
-    "vite": "^6.0.0"
+    "vite": "^6.0.0",
+    "vite-plugin-pwa": "^0.21.1",
+    "sharp": "^0.33.5"
   }
 }

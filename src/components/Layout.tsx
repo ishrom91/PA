@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import InstallPrompt from './InstallPrompt';
 import {
   IconHome,
   IconSun,
@@ -86,6 +87,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </main>
+
+      {/* PWA install banner (Chrome / Edge / Android) */}
+      <InstallPrompt />
 
       {/* Mobile tab bar — iOS-style floating glass */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 pointer-events-none">
