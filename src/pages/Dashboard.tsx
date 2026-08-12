@@ -4,9 +4,10 @@ import { getVirtueForMonth } from '../data/virtues';
 import { RULES } from '../data/rulesData';
 import { countIntegrated, getActiveRules } from '../utils/rules';
 import { IconCheck, IconChevron } from '../components/Icons';
+import Onboarding from '../components/Onboarding';
 
 export default function Dashboard() {
-  const { ruleStatuses, todayEntry, saveVirtueIntention } = useApp();
+  const { ruleStatuses, todayEntry, saveVirtueIntention, onboardingCompleted, completeOnboarding } = useApp();
   const virtue = getVirtueForMonth();
   const activeRuleNumbers = getActiveRules(ruleStatuses);
   const integratedCount = countIntegrated(ruleStatuses);
@@ -23,6 +24,10 @@ export default function Dashboard() {
     day: 'numeric',
     month: 'long',
   });
+
+  if (!onboardingCompleted) {
+    return <Onboarding onComplete={completeOnboarding} />;
+  }
 
   return (
     <div className="space-y-6">

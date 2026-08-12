@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate:book": "node scripts/generate-bookData.mjs --from-docx"
   },
   "dependencies": {
     "framer-motion": "^13.1.0",

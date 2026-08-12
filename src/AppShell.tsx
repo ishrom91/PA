@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useApp } from './context/AppStateContext';
-import Onboarding from './components/Onboarding';
 import Layout from './components/Layout';
+import SeoHead from './components/SeoHead';
 import Dashboard from './pages/Dashboard';
 import MorningPage from './pages/MorningPage';
 import DayPage from './pages/DayPage';
@@ -12,14 +11,9 @@ import NotesPage from './pages/NotesPage';
 import JournalPage from './pages/JournalPage';
 
 export default function AppShell() {
-  const { onboardingCompleted, completeOnboarding } = useApp();
-
-  if (!onboardingCompleted) {
-    return <Onboarding onComplete={completeOnboarding} />;
-  }
-
   return (
     <BrowserRouter>
+      <SeoHead />
       <Layout>
         <Routes>
           <Route path="/" element={<Dashboard />} />

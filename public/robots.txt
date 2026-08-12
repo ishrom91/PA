@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pa-mauve-iota.vercel.app/sitemap.xml
