@@ -1,9 +1,11 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { bookData, getSectionById, type BookSection, type SectionType } from '../data/bookData';
 import { useApp } from '../context/AppStateContext';
+import { useBookTextSelection } from '../hooks/useBookTextSelection';
 import MarkdownContent from '../components/MarkdownContent';
 import Modal from '../components/Modal';
+import SelectionToolbar from '../components/SelectionToolbar';
 
 interface TocNode {
   section: BookSection;
@@ -83,34 +85,48 @@ export default function BookPage() {
 
   const [noteModal, setNoteModal] = useState(false);
   const [selectedText, setSelectedText] = useState('');
+  const [noteSectionId, setNoteSectionId] = useState('');
+  const [noteSectionTitle, setNoteSectionTitle] = useState('');
   const [noteText, setNoteText] = useState('');
   const contentRef = useRef<HTMLDivElement>(null);
 
   const activeSection = sectionId ? getSectionById(sectionId) : null;
   const childSections = activeSection ? getChildSections(activeSection.id) : [];
 
+  const sectionTitles = useMemo(() => {
+    const map: Record<string, string> = {};
+    if (activeSection) map[activeSection.id] = activeSection.title;
+    for (const child of childSections) map[child.id] = child.title;
+    return map;
+  }, [activeSection, childSections]);
+
+  const { selection, dismissToolbar, clearSelection } = useBookTextSelection(
+    contentRef,
+    sectionTitles,
+  );
+
   const sectionNotes = notes.filter((n) => n.sectionId === sectionId);
 
-  const handleTextSelection = useCallback(() => {
-    const sel = window.getSelection();
-    if (!sel || sel.isCollapsed || !activeSection) return;
-    const text = sel.toString().trim();
-    if (text.length < 3) return;
-    setSelectedText(text);
+  const openNoteModal = () => {
+    if (!selection) return;
+    setSelectedText(selection.text);
+    setNoteSectionId(selection.sectionId);
+    setNoteSectionTitle(selection.sectionTitle);
     setNoteText('');
     setNoteModal(true);
-  }, [activeSection]);
+    dismissToolbar();
+  };
 
   const saveNote = () => {
-    if (!activeSection || !selectedText || !noteText.trim()) return;
+    if (!noteSectionId || !selectedText || !noteText.trim()) return;
     addNote({
-      sectionId: activeSection.id,
-      sectionTitle: activeSection.title,
+      sectionId: noteSectionId,
+      sectionTitle: noteSectionTitle,
       highlightedText: selectedText,
       noteText: noteText.trim(),
     });
     setNoteModal(false);
-    window.getSelection()?.removeAllRanges();
+    clearSelection();
   };
 
   if (activeSection) {
@@ -139,9 +155,11 @@ export default function BookPage() {
           </h1>
         </header>
 
-        <div ref={contentRef} onMouseUp={handleTextSelection} className="select-text space-y-10">
+        <div ref={contentRef} className="select-text space-y-10">
           {activeSection.content.length > 0 && (
-            <MarkdownContent content={activeSection.content} noteHighlights={highlights} />
+            <div data-section-id={activeSection.id}>
+              <MarkdownContent content={activeSection.content} noteHighlights={highlights} />
+            </div>
           )}
 
           {childSections.map((child) => {
@@ -154,6 +172,7 @@ export default function BookPage() {
               <section
                 key={child.id}
                 id={child.id}
+                data-section-id={child.id}
                 className="scroll-mt-6 pt-8 border-t border-paper dark:border-paper-dark"
               >
                 {childLabel && (
@@ -168,8 +187,16 @@ export default function BookPage() {
           })}
         </div>
 
+        {selection && !noteModal && (
+          <SelectionToolbar
+            top={selection.top}
+            left={selection.left}
+            onAddNote={openNoteModal}
+          />
+        )}
+
         <p className="text-xs text-faint italic border-t border-paper dark:border-paper-dark pt-4">
-          Выделите фрагмент текста, чтобы добавить пометку.
+          Выделите фрагмент текста и нажмите «Пометка».
         </p>
 
         <Modal open={noteModal} onClose={() => setNoteModal(false)} title="Пометка">
