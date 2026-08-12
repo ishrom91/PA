@@ -36,7 +36,7 @@ export default function RulesPage() {
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-[13px] font-bold shrink-0 ${
                   status === 'integrated' ? 'bg-olive-soft text-olive'
                     : status === 'active' ? 'bg-terracotta-soft text-terracotta'
-                    : 'bg-cream text-graphite-tertiary'
+                    : 'bg-cream dark:bg-cream-dark text-faint'
                 }`}>
                   {rule.number}
                 </div>
@@ -45,11 +45,11 @@ export default function RulesPage() {
                     <p className="font-medium text-[15px] leading-snug">{rule.title}</p>
                     <StatusBadge status={status} />
                   </div>
-                  <p className="text-[13px] text-graphite-secondary mt-1 line-clamp-2">
+                  <p className="text-[13px] text-muted mt-1 line-clamp-2">
                     {rule.shortDescription}
                   </p>
                   {status === 'locked' && daysLeft !== null && (
-                    <p className="text-[12px] text-graphite-tertiary mt-2">
+                    <p className="text-[12px] text-faint mt-2">
                       Откроется через {daysLeft} дн.
                     </p>
                   )}
@@ -63,19 +63,19 @@ export default function RulesPage() {
       {selectedRule && selectedStatus && (
         <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center">
           <div className="absolute inset-0 bg-graphite/20 backdrop-blur-sm" onClick={() => setSelected(null)} />
-          <div className="relative w-full md:max-w-2xl max-h-[92vh] overflow-y-auto bg-surface rounded-t-4xl md:rounded-4xl shadow-float animate-slide-up">
-            <div className="sticky top-0 bg-surface/95 backdrop-blur-xl z-10 px-5 pt-3 pb-4 border-b border-paper/50 flex items-start justify-between gap-3">
+          <div className="relative w-full md:max-w-2xl max-h-[92vh] overflow-y-auto bg-surface dark:bg-surface-dark rounded-t-4xl md:rounded-4xl shadow-float dark:shadow-float-dark animate-slide-up">
+            <div className="sticky top-0 bg-surface/95 dark:bg-surface-dark/95 backdrop-blur-xl z-10 px-5 pt-3 pb-4 border-b border-paper/50 dark:border-paper-dark/50 flex items-start justify-between gap-3">
               <div className="w-10 h-1 bg-paper rounded-full mx-auto mb-0 absolute top-3 left-0 right-0 md:hidden" />
               <div className="pt-4 md:pt-0 flex-1">
                 <StatusBadge status={selectedStatus.status} />
                 <h2 className="text-[20px] font-semibold tracking-tight mt-2">
                   {selectedRule.title}
                 </h2>
-                <p className="text-[13px] text-graphite-secondary">{selectedRule.tradition}</p>
+                <p className="text-[13px] text-muted">{selectedRule.tradition}</p>
               </div>
               <button
                 onClick={() => setSelected(null)}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-cream shrink-0 mt-4 md:mt-0"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-cream dark:bg-cream-dark shrink-0 mt-4 md:mt-0 text-graphite dark:text-graphite-dark"
               >
                 <IconClose />
               </button>
@@ -117,7 +117,7 @@ export default function RulesPage() {
 
 function StatusBadge({ status }: { status: RuleStatus }) {
   const styles: Record<RuleStatus, string> = {
-    locked: 'bg-cream text-graphite-tertiary',
+    locked: 'bg-cream dark:bg-cream-dark text-faint',
     available: 'bg-terracotta-soft text-terracotta',
     active: 'bg-terracotta-soft text-terracotta font-medium',
     integrated: 'bg-olive-soft text-olive',

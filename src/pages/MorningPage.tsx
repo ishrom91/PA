@@ -53,14 +53,14 @@ export default function MorningPage() {
         <PageHeader title="Утро записано" subtitle="Записи сохранены в журнал" />
         <div className="card space-y-5 text-sm">
           <SummaryBlock title="Дихотомия контроля">
-            <p><span className="text-graphite/50">Решение:</span> {decision}</p>
-            <p><span className="text-graphite/50">Усилие:</span> {effort}</p>
-            <p><span className="text-graphite/50">Отношение:</span> {attitude}</p>
+            <p><span className="text-muted">Решение:</span> {decision}</p>
+            <p><span className="text-muted">Усилие:</span> {effort}</p>
+            <p><span className="text-muted">Отношение:</span> {attitude}</p>
           </SummaryBlock>
           <SummaryBlock title="Субъективная ценность">
-            <p><span className="text-graphite/50">Кто:</span> {person}</p>
-            <p><span className="text-graphite/50">Ценит:</span> {values}</p>
-            <p><span className="text-graphite/50">Выгода:</span> {benefit}</p>
+            <p><span className="text-muted">Кто:</span> {person}</p>
+            <p><span className="text-muted">Ценит:</span> {values}</p>
+            <p><span className="text-muted">Выгода:</span> {benefit}</p>
           </SummaryBlock>
           <SummaryBlock title={`Добродетель: ${virtue.name}`}>
             <p>{situation}</p>

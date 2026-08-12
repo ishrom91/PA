@@ -78,7 +78,7 @@ export default function EveningPage() {
           <div>
             <h3 className="font-display mb-2">Аутентичность</h3>
             <p>{mainAction}</p>
-            <p className="text-graphite/50 mt-1">
+            <p className="text-muted mt-1">
               {wouldDoInPrivate ? 'Сделал бы и без свидетелей' : 'Внешняя мотивация'}
             </p>
           </div>
@@ -176,7 +176,7 @@ export default function EveningPage() {
                     type="button"
                     onClick={() => setWouldDoInPrivate(true)}
                     className={`flex-1 py-3.5 rounded-2xl font-medium text-[15px] transition-all ${
-                      wouldDoInPrivate ? 'bg-olive-soft dark:bg-olive-soft-dark text-olive ring-2 ring-olive/20' : 'bg-cream dark:bg-cream-dark text-graphite-secondary'
+                      wouldDoInPrivate ? 'bg-olive-soft dark:bg-olive-soft-dark text-olive ring-2 ring-olive/20' : 'bg-cream dark:bg-cream-dark text-muted'
                     }`}
                   >
                     Да
@@ -185,7 +185,7 @@ export default function EveningPage() {
                     type="button"
                     onClick={() => setWouldDoInPrivate(false)}
                     className={`flex-1 py-3.5 rounded-2xl font-medium text-[15px] transition-all ${
-                      !wouldDoInPrivate ? 'bg-cream dark:bg-cream-dark text-graphite ring-2 ring-paper' : 'bg-cream dark:bg-cream-dark text-graphite-secondary'
+                      !wouldDoInPrivate ? 'bg-cream dark:bg-cream-dark text-graphite dark:text-graphite-dark ring-2 ring-paper dark:ring-paper-dark' : 'bg-cream dark:bg-cream-dark text-muted'
                     }`}
                   >
                     Нет

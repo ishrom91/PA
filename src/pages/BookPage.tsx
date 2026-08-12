@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { bookData, getSectionById, type BookSection } from '../data/bookData';
+import { bookData, getSectionById, type BookSection, type SectionType } from '../data/bookData';
 import { useApp } from '../context/AppStateContext';
 import MarkdownContent from '../components/MarkdownContent';
 import Modal from '../components/Modal';
@@ -52,6 +52,30 @@ function buildToc(): TocNode[] {
 
 const TOC = buildToc();
 
+function findTocNode(id: string, nodes: TocNode[] = TOC): TocNode | null {
+  for (const node of nodes) {
+    if (node.section.id === id) return node;
+    const found = findTocNode(id, node.children);
+    if (found) return found;
+  }
+  return null;
+}
+
+function getChildSections(id: string): BookSection[] {
+  const node = findTocNode(id);
+  return node?.children.map((c) => c.section) ?? [];
+}
+
+const SECTION_TYPE_LABEL: Partial<Record<SectionType, string>> = {
+  axiom: 'Аксиома',
+  rule: 'Правило',
+  extension: 'Расширение',
+  chapter: 'Глава',
+  part: 'Часть',
+  appendix: 'Приложение',
+  conclusion: 'Заключение',
+};
+
 export default function BookPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const sectionId = searchParams.get('section');
@@ -63,6 +87,7 @@ export default function BookPage() {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const activeSection = sectionId ? getSectionById(sectionId) : null;
+  const childSections = activeSection ? getChildSections(activeSection.id) : [];
 
   const sectionNotes = notes.filter((n) => n.sectionId === sectionId);
 
@@ -94,6 +119,8 @@ export default function BookPage() {
       noteId: n.id,
     }));
 
+    const typeLabel = SECTION_TYPE_LABEL[activeSection.type];
+
     return (
       <div className="space-y-6">
         <button
@@ -104,30 +131,50 @@ export default function BookPage() {
         </button>
 
         <header>
-          <p className="text-xs text-graphite/40 uppercase tracking-wide mb-1">
-            {activeSection.type}
-          </p>
-          <h1 className="font-display text-2xl leading-snug">{activeSection.title}</h1>
+          {typeLabel && (
+            <p className="text-xs text-faint uppercase tracking-wide mb-1">{typeLabel}</p>
+          )}
+          <h1 className="font-display text-2xl leading-snug text-graphite dark:text-graphite-dark">
+            {activeSection.title}
+          </h1>
         </header>
 
-        <div
-          ref={contentRef}
-          onMouseUp={handleTextSelection}
-          className="select-text"
-        >
-          <MarkdownContent
-            content={activeSection.content}
-            noteHighlights={highlights}
-          />
+        <div ref={contentRef} onMouseUp={handleTextSelection} className="select-text space-y-10">
+          {activeSection.content.length > 0 && (
+            <MarkdownContent content={activeSection.content} noteHighlights={highlights} />
+          )}
+
+          {childSections.map((child) => {
+            const childHighlights = notes
+              .filter((n) => n.sectionId === child.id)
+              .map((n) => ({ text: n.highlightedText, noteId: n.id }));
+            const childLabel = SECTION_TYPE_LABEL[child.type];
+
+            return (
+              <section
+                key={child.id}
+                id={child.id}
+                className="scroll-mt-6 pt-8 border-t border-paper dark:border-paper-dark"
+              >
+                {childLabel && (
+                  <p className="text-xs text-faint uppercase tracking-wide mb-1">{childLabel}</p>
+                )}
+                <h2 className="font-display text-xl leading-snug mb-4 text-graphite dark:text-graphite-dark">
+                  {child.title}
+                </h2>
+                <MarkdownContent content={child.content} noteHighlights={childHighlights} />
+              </section>
+            );
+          })}
         </div>
 
-        <p className="text-xs text-graphite/40 italic border-t border-paper pt-4">
+        <p className="text-xs text-faint italic border-t border-paper dark:border-paper-dark pt-4">
           Выделите фрагмент текста, чтобы добавить пометку.
         </p>
 
         <Modal open={noteModal} onClose={() => setNoteModal(false)} title="Пометка">
           <div className="space-y-4">
-            <blockquote className="border-l-2 border-terracotta/40 pl-3 text-sm italic text-graphite/70">
+            <blockquote className="border-l-2 border-terracotta/40 pl-3 text-sm italic text-muted">
               «{selectedText.slice(0, 120)}{selectedText.length > 120 ? '…' : ''}»
             </blockquote>
             <textarea
@@ -153,9 +200,9 @@ export default function BookPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="font-display text-2xl">{bookData.title}</h1>
-        <p className="text-graphite/60 mt-1 italic">{bookData.subtitle}</p>
-        <p className="text-sm text-graphite/40 mt-2">{bookData.author}</p>
+        <h1 className="font-display text-2xl text-graphite dark:text-graphite-dark">{bookData.title}</h1>
+        <p className="text-muted mt-1 italic">{bookData.subtitle}</p>
+        <p className="text-sm text-faint mt-2">{bookData.author}</p>
       </header>
 
       <nav className="space-y-2">
@@ -164,6 +211,12 @@ export default function BookPage() {
         ))}
       </nav>
     </div>
+  );
+}
+
+function hasNestedContent(node: TocNode): boolean {
+  return node.children.some(
+    (c) => c.section.type === 'axiom' || c.section.type === 'rule' || c.section.type === 'extension',
   );
 }
 
@@ -176,9 +229,10 @@ function TocItem({
   onSelect: (id: string) => void;
   depth?: number;
 }) {
-  const [open, setOpen] = useState(depth < 1);
+  const nested = hasNestedContent(node);
+  const [open, setOpen] = useState(depth < 1 || nested);
   const hasChildren = node.children.length > 0;
-  const hasContent = node.section.content.length > 0;
+  const hasContent = node.section.content.length > 0 || hasChildren;
 
   return (
     <div style={{ paddingLeft: depth * 12 }}>
@@ -186,22 +240,34 @@ function TocItem({
         {hasChildren && (
           <button
             onClick={() => setOpen(!open)}
-            className="text-graphite/30 hover:text-graphite w-5 text-xs shrink-0"
+            className="text-faint hover:text-graphite dark:hover:text-graphite-dark w-5 text-xs shrink-0"
+            aria-label={open ? 'Свернуть' : 'Развернуть'}
           >
             {open ? '▾' : '▸'}
           </button>
         )}
         <button
-          onClick={() => hasContent || !hasChildren ? onSelect(node.section.id) : setOpen(true)}
-          className={`flex-1 text-left py-2 px-2 rounded-lg hover:bg-white/50 transition-colors text-sm ${
+          onClick={() => {
+            if (hasContent) onSelect(node.section.id);
+            else if (hasChildren) setOpen(true);
+          }}
+          className={`flex-1 text-left py-2 px-2 rounded-lg hover:bg-cream dark:hover:bg-cream-dark transition-colors text-sm text-graphite dark:text-graphite-dark ${
             depth === 0 ? 'font-display font-medium' : ''
-          }`}
+          } ${node.section.type === 'axiom' ? 'text-[13px] pl-4' : ''}`}
         >
+          {node.section.type === 'axiom' && (
+            <span className="text-terracotta mr-1.5 text-[11px] font-semibold uppercase tracking-wide">
+              ◆
+            </span>
+          )}
           {node.section.title}
+          {hasChildren && !open && (
+            <span className="text-faint ml-1">({node.children.length})</span>
+          )}
         </button>
       </div>
       {open && hasChildren && (
-        <div className="border-l border-paper ml-2">
+        <div className="border-l border-paper dark:border-paper-dark ml-2">
           {node.children.map((child) => (
             <TocItem key={child.section.id} node={child} onSelect={onSelect} depth={depth + 1} />
           ))}

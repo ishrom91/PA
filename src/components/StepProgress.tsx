@@ -16,14 +16,14 @@ export default function StepProgress({ current, total, labels }: StepProgressPro
             <div
               key={step}
               className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                done ? 'bg-olive' : active ? 'bg-terracotta' : 'bg-paper'
+                done ? 'bg-olive' : active ? 'bg-terracotta' : 'bg-paper dark:bg-paper-dark'
               }`}
             />
           );
         })}
       </div>
       {labels && (
-        <p className="text-[13px] text-graphite-secondary">
+        <p className="text-[13px] text-muted">
           Шаг {current} из {total}
           {labels[current - 1] ? ` · ${labels[current - 1]}` : ''}
         </p>

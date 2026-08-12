@@ -32,9 +32,9 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <header className="space-y-1">
-        <p className="text-[13px] font-medium text-graphite-secondary capitalize">{today}</p>
+        <p className="text-[13px] font-medium text-muted capitalize">{today}</p>
         <h1 className="page-title">Philosophia Activa</h1>
-        <p className="text-[15px] text-graphite-secondary font-display italic leading-relaxed pt-1">
+        <p className="text-[15px] text-muted font-display italic leading-relaxed pt-1">
           «Философия — это не музей. Это спортзал для разума.»
         </p>
       </header>
@@ -46,7 +46,7 @@ export default function Dashboard() {
           <div className="flex-1 min-w-0 space-y-3">
             <div>
               <p className="section-title">Сегодня</p>
-              <p className="text-[13px] text-graphite-secondary mt-0.5">
+              <p className="text-[13px] text-muted mt-0.5">
                 {todayCount === 0
                   ? 'День ещё пуст — это нормально'
                   : todayCount === 3
@@ -100,7 +100,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-[15px] truncate">{rule.title}</p>
-                  <p className="text-[12px] text-graphite-secondary">{rule.tradition}</p>
+                  <p className="text-[12px] text-muted">{rule.tradition}</p>
                 </div>
                 {rule.practiceRoute && (
                   <Link
@@ -123,13 +123,13 @@ export default function Dashboard() {
             {integratedCount}/17
           </span>
         </div>
-        <div className="h-2 bg-cream rounded-full overflow-hidden">
+        <div className="h-2 bg-cream dark:bg-cream-dark rounded-full overflow-hidden">
           <div
             className="h-full bg-olive rounded-full transition-all duration-500 ease-out"
             style={{ width: `${(integratedCount / 17) * 100}%` }}
           />
         </div>
-        <p className="text-[12px] text-graphite-secondary mt-2">
+        <p className="text-[12px] text-muted mt-2">
           Одно правило каждые две недели — принцип минимальной дозы
         </p>
       </section>
@@ -162,7 +162,7 @@ function TodayRing({ done, total }: { done: number; total: number }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-lg font-semibold leading-none">{done}</span>
-        <span className="text-[10px] text-graphite-secondary">/{total}</span>
+        <span className="text-[10px] text-muted">/{total}</span>
       </div>
     </div>
   );
@@ -181,7 +181,7 @@ function PracticeChip({
     <Link
       to={to}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-medium transition-all active:scale-95 ${
-        done ? 'bg-olive-soft text-olive' : 'bg-cream text-graphite-secondary hover:bg-paper'
+        done ? 'bg-olive-soft text-olive' : 'bg-cream dark:bg-cream-dark text-muted hover:bg-paper dark:hover:bg-paper-dark'
       }`}
     >
       {done && <IconCheck className="w-3.5 h-3.5" />}

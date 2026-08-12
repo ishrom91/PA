@@ -64,7 +64,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-[15px] transition-all duration-150 ${
                     active
                       ? 'bg-terracotta-soft text-terracotta font-medium'
-                      : 'text-graphite-secondary hover:bg-cream hover:text-graphite'
+                      : 'text-graphite-secondary dark:text-graphite-secondary-dark hover:bg-cream dark:hover:bg-cream-dark hover:text-graphite dark:hover:text-graphite-dark'
                   }`}
                 >
                   <Icon filled={active} className="w-5 h-5 shrink-0" />
@@ -98,7 +98,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 to={path}
                 onClick={() => setMoreOpen(false)}
                 className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 rounded-2xl transition-all duration-150 min-w-0 ${
-                  active ? 'text-terracotta' : 'text-graphite-tertiary'
+                  active ? 'text-terracotta' : 'text-graphite-tertiary dark:text-graphite-tertiary-dark'
                 }`}
               >
                 <Icon filled={active} className={`w-[22px] h-[22px] ${active ? 'scale-105' : ''} transition-transform`} />
@@ -111,7 +111,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <button
             onClick={() => setMoreOpen(true)}
             className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 rounded-2xl transition-colors min-w-0 ${
-              moreActive || moreOpen ? 'text-terracotta' : 'text-graphite-tertiary'
+              moreActive || moreOpen ? 'text-terracotta' : 'text-graphite-tertiary dark:text-graphite-tertiary-dark'
             }`}
           >
             <IconMore className="w-[22px] h-[22px]" />
@@ -129,7 +129,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           />
           <div className="absolute bottom-0 inset-x-0 bg-surface dark:bg-surface-dark rounded-t-4xl shadow-float dark:shadow-float-dark animate-slide-up pb-[calc(1rem+env(safe-area-inset-bottom))]">
             <div className="w-10 h-1 bg-paper rounded-full mx-auto mt-3 mb-4" />
-            <p className="px-5 text-[13px] font-semibold uppercase tracking-wider text-graphite-secondary mb-3">
+            <p className="px-5 text-[13px] font-semibold uppercase tracking-wider text-muted mb-3">
               Разделы
             </p>
             <div className="px-3 space-y-1">
@@ -138,16 +138,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   key={path}
                   to={path}
                   onClick={() => setMoreOpen(false)}
-                  className="flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-cream active:bg-cream transition-colors"
+                  className="flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-cream dark:hover:bg-cream-dark active:bg-cream dark:active:bg-cream-dark transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-2xl bg-terracotta-soft flex items-center justify-center text-terracotta">
+                  <div className="w-10 h-10 rounded-2xl bg-terracotta-soft dark:bg-terracotta-soft-dark flex items-center justify-center text-terracotta">
                     <Icon className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-[15px]">{label}</p>
-                    <p className="text-[13px] text-graphite-secondary">{desc}</p>
+                    <p className="font-medium text-[15px] text-graphite dark:text-graphite-dark">{label}</p>
+                    <p className="text-[13px] text-muted">{desc}</p>
                   </div>
-                  <IconChevron className="text-graphite-tertiary shrink-0" />
+                  <IconChevron className="text-faint shrink-0" />
                 </Link>
               ))}
             </div>

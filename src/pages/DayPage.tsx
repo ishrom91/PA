@@ -61,9 +61,9 @@ export default function DayPage() {
             </div>
             <div className="min-w-0 flex-1">
               <p className="font-medium text-[15px]">{p.title}</p>
-              <p className="text-[13px] text-graphite-secondary">{p.subtitle}</p>
+              <p className="text-[13px] text-muted">{p.subtitle}</p>
             </div>
-            <span className="text-graphite-tertiary text-lg">›</span>
+            <span className="text-faint text-lg">›</span>
           </button>
         ))}
       </div>
@@ -239,7 +239,7 @@ function EmpathyModal({
         <Field label="Он думает, что…" value={thinks} onChange={setThinks} />
         <Field label="Он чувствует…" value={feels} onChange={setFeels} />
         <Field label="Он хочет…" value={wants} onChange={setWants} />
-        <p className="text-xs text-graphite/40 italic">
+        <p className="text-xs text-faint italic">
           Без слов «правильно», «должен», «странно», «очевидно». Если хочешь их написать — начни заново.
         </p>
         {forbidden && (
@@ -296,8 +296,8 @@ function LanguageGameModal({
         ))}
         {selected && (
           <div className="card mt-4 text-sm space-y-2">
-            <p><span className="text-graphite/50">Тон:</span> {selected.tone}</p>
-            <p><span className="text-graphite/50">Цель:</span> {selected.goal}</p>
+            <p><span className="text-muted">Тон:</span> {selected.tone}</p>
+            <p><span className="text-muted">Цель:</span> {selected.goal}</p>
           </div>
         )}
         <button

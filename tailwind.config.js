@@ -19,11 +19,11 @@ export default {
         },
         'graphite-secondary': {
           DEFAULT: 'rgba(28, 28, 30, 0.55)',
-          dark: 'rgba(245, 245, 247, 0.55)',
+          dark: 'rgba(245, 245, 247, 0.78)',
         },
         'graphite-tertiary': {
           DEFAULT: 'rgba(28, 28, 30, 0.35)',
-          dark: 'rgba(245, 245, 247, 0.35)',
+          dark: 'rgba(245, 245, 247, 0.62)',
         },
         terracotta: '#C05621',
         'terracotta-soft': 'rgba(192, 86, 33, 0.12)',

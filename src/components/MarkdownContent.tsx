@@ -158,7 +158,7 @@ export default function MarkdownContent({
 
   return (
     <div
-      className="markdown-body text-graphite/90 leading-relaxed"
+      className="markdown-body leading-relaxed"
       dangerouslySetInnerHTML={{ __html: html }}
       onClick={(e) => {
         const target = (e.target as HTMLElement).closest('[data-note-id]');
