@@ -10,7 +10,7 @@ export default defineConfig({
       includeAssets: ['favicon.svg', 'icon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Philosophia Activa — дневник практик',
-        short_name: 'Philosophia',
+        short_name: 'Philosophia Activa',
         description:
           'Интерактивный дневник практик по книге Рим Рами. 17 правил, утренние и вечерние ритуалы, читалка с пометками.',
         theme_color: '#F2F0EB',
