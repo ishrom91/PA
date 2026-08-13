@@ -130,8 +130,8 @@ export default function PracticeChatFlow({
   });
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, stepIndex, saved]);
+    bottomRef.current?.scrollIntoView({ behavior: embedded ? 'auto' : 'smooth' });
+  }, [messages, stepIndex, saved, embedded]);
 
   useEffect(() => () => {
     void stop();
@@ -415,6 +415,13 @@ export default function PracticeChatFlow({
             </button>
           </div>
         </form>
+
+        {embedded && fillHeight && (
+          <div
+            className="shrink-0 pointer-events-none h-[calc(4.75rem+env(safe-area-inset-bottom))] md:h-0"
+            aria-hidden
+          />
+        )}
       </div>
     </>
   );

@@ -97,7 +97,7 @@ function MobileTabBar({ pathname }: { pathname: string }) {
   return (
     <nav
       aria-label="Основная навигация"
-      className="md:hidden fixed bottom-0 inset-x-0 z-50 px-3 pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pointer-events-none"
+      className="md:hidden fixed bottom-0 inset-x-0 z-[110] px-3 pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pointer-events-none"
     >
       <div className="pointer-events-auto bg-surface/90 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-3xl shadow-nav dark:shadow-nav-dark border border-white/60 dark:border-white/10 flex items-stretch px-0.5 py-1">
         {NAV_ITEMS.map(({ path, label, Icon }) => (
@@ -157,13 +157,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Mobile: main + floating tab bar (transparent wrapper, no bottom color strip) */}
       <div className="flex min-h-0 flex-1 flex-col md:contents">
         <main
-          className={`min-h-0 md:ml-64 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8 ${
-            isPractices ? 'overflow-hidden' : 'overflow-y-auto'
+          className={`md:ml-64 md:pb-8 ${
+            isPractices
+              ? 'flex flex-1 flex-col min-h-0 overflow-hidden'
+              : 'min-h-0 overflow-y-auto pb-[calc(5.5rem+env(safe-area-inset-bottom))]'
           }`}
         >
           <div
-            className={`mx-auto flex h-full w-full max-w-lg flex-col min-h-0 ${
-              isPractices ? 'md:px-6 md:py-8' : 'px-4 py-5 md:py-8 md:px-6 animate-fade-in'
+            className={`mx-auto flex w-full max-w-lg flex-col min-h-0 ${
+              isPractices
+                ? 'flex-1 md:px-6 md:py-8'
+                : 'h-full px-4 py-5 md:py-8 md:px-6 animate-fade-in'
             }`}
           >
             {children}
