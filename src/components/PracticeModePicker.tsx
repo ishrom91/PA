@@ -14,6 +14,7 @@ interface PracticeModePickerProps {
   onSelect: (id: PracticeId) => void;
   grouped: { group: PracticeGroup; label: string; items: PracticeDefinition[] }[];
   todayEntry?: JournalEntry;
+  buttonClassName?: string;
 }
 
 export default function PracticeModePicker({
@@ -21,6 +22,7 @@ export default function PracticeModePicker({
   onSelect,
   grouped,
   todayEntry,
+  buttonClassName = '',
 }: PracticeModePickerProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -61,21 +63,17 @@ export default function PracticeModePicker({
 
   return (
     <>
-      <div ref={rootRef} className="relative inline-flex max-w-full">
+      <div ref={rootRef} className="relative min-w-0 max-w-[11rem]">
         <button
           type="button"
-          className={`inline-flex items-center gap-1.5 max-w-[min(100vw-7rem,16rem)] px-4 py-2 rounded-full text-[15px] font-medium transition-all active:scale-[0.98] ${
-            open
-              ? 'bg-paper dark:bg-paper-dark text-graphite dark:text-graphite-dark shadow-sm'
-              : 'bg-paper/90 dark:bg-paper-dark/90 text-graphite dark:text-graphite-dark hover:bg-paper dark:hover:bg-paper-dark'
-          }`}
+          className={`w-full ${buttonClassName}`}
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-haspopup="listbox"
         >
           <span className="truncate">{selected?.title ?? 'Практика'}</span>
           <IconChevron
-            className={`w-4 h-4 shrink-0 opacity-50 transition-transform duration-200 ${
+            className={`w-4 h-4 shrink-0 opacity-45 transition-transform duration-200 ${
               open ? 'rotate-90' : '-rotate-90'
             }`}
           />

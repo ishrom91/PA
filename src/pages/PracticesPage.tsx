@@ -19,6 +19,9 @@ const GROUP_ORDER: PracticeGroup[] = ['morning', 'evening', 'day'];
 
 const DEFAULT_PRACTICE_ID: PracticeId = 'free';
 
+const FLOAT_CAPSULE =
+  'inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full text-[14px] font-medium whitespace-nowrap bg-surface/95 dark:bg-surface-dark/95 backdrop-blur-xl text-graphite dark:text-graphite-dark shadow-float dark:shadow-float-dark ring-1 ring-black/[0.06] dark:ring-white/[0.08] transition-all active:scale-[0.98]';
+
 export default function PracticesPage() {
   const [params, setParams] = useSearchParams();
   const { todayEntry, ...app } = useApp();
@@ -60,49 +63,41 @@ export default function PracticesPage() {
   const showSave = headerAction && !headerAction.hidden;
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 animate-fade-in">
-      <header className="relative shrink-0 px-4 pt-2 pb-2 border-b border-paper/40 dark:border-paper-dark/40">
-        <div className="flex items-center justify-center min-h-[2.5rem]">
+    <div className="relative flex flex-col flex-1 min-h-0 animate-fade-in">
+      <div className="absolute inset-x-0 top-0 z-20 pt-2 px-3 flex justify-center pointer-events-none">
+        <div className="pointer-events-auto flex items-center gap-2 max-w-full">
           <PracticeModePicker
             selectedId={selectedId}
             onSelect={selectPractice}
             grouped={grouped}
             todayEntry={todayEntry}
+            buttonClassName={FLOAT_CAPSULE}
           />
 
-          {(showSave || doneToday) && (
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-              {showSave && (
-                <button
-                  type="button"
-                  className="shrink-0 rounded-full px-3 py-1.5 text-[12px] font-medium whitespace-nowrap bg-terracotta text-white shadow-sm hover:bg-terracotta/90 active:scale-[0.97] transition-all disabled:opacity-50"
-                  disabled={headerAction.disabled}
-                  onClick={headerAction.onClick}
-                >
-                  {headerAction.label}
-                </button>
-              )}
-              {doneToday && (
-                <span className="chip-done !text-[10px] !py-0.5 !px-2 !gap-0.5">
-                  <IconCheck className="w-3 h-3" />
-                </span>
-              )}
-            </div>
+          {showSave && (
+            <button
+              type="button"
+              className={`${FLOAT_CAPSULE} shrink-0 disabled:opacity-40`}
+              disabled={headerAction.disabled}
+              onClick={headerAction.onClick}
+            >
+              {headerAction.label}
+            </button>
+          )}
+
+          {doneToday && (
+            <span className={`${FLOAT_CAPSULE} !px-3 shrink-0 text-olive`} aria-label="Сделано сегодня">
+              <IconCheck className="w-4 h-4" />
+            </span>
           )}
         </div>
-
-        {selectedId !== 'free' && (
-          <p className="mt-1.5 text-center text-[11px] text-muted leading-snug line-clamp-1 px-8">
-            {selected.subtitle}
-            <span className="text-faint"> · {selected.tradition}</span>
-          </p>
-        )}
-      </header>
+      </div>
 
       <PracticeChatFlow
         key={`${selectedId}-${chatKey}`}
         embedded
         fillHeight
+        headerInset
         saveInHeader
         onHeaderAction={setHeaderAction}
         steps={selected.getSteps()}
