@@ -6,6 +6,7 @@
   html {
     -webkit-tap-highlight-color: transparent;
     color-scheme: light dark;
+    touch-action: manipulation;
   }
 
   body {

@@ -25,16 +25,50 @@ function isActive(pathname: string, path: string) {
   return path === '/' ? pathname === '/' : pathname.startsWith(path);
 }
 
+function MobileTabBar({ pathname }: { pathname: string }) {
+  return (
+    <nav
+      aria-label="Основная навигация"
+      className="md:hidden shrink-0 px-3 pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom))] bg-cream dark:bg-cream-dark"
+    >
+      <div className="bg-surface/90 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-3xl shadow-nav dark:shadow-nav-dark border border-white/60 dark:border-white/10 flex items-stretch px-0.5 py-1">
+        {NAV_ITEMS.map(({ path, label, Icon }) => {
+          const active = isActive(pathname, path);
+          return (
+            <Link
+              key={path}
+              to={path}
+              className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 rounded-2xl transition-all duration-150 min-w-0 touch-manipulation ${
+                active ? 'text-terracotta' : 'text-graphite-tertiary dark:text-graphite-tertiary-dark'
+              }`}
+            >
+              <Icon
+                filled={active}
+                className={`w-[21px] h-[21px] ${active ? 'scale-105' : ''} transition-transform`}
+              />
+              <span
+                className={`text-[9px] font-medium truncate w-full text-center leading-tight ${active ? 'opacity-100' : 'opacity-80'}`}
+              >
+                {label}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const isPractices = location.pathname.startsWith('/practices');
 
   return (
-    <>
-      <div className="h-dvh max-h-dvh flex flex-col md:flex-row md:h-auto md:max-h-none md:min-h-screen overflow-hidden md:overflow-visible">
-        <NavigationTracker />
-        {/* Desktop sidebar */}
-        <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-40">
+    <div className="h-dvh max-h-dvh flex flex-col bg-cream dark:bg-cream-dark md:flex-row md:h-auto md:max-h-none md:min-h-screen overflow-hidden md:overflow-visible">
+      <NavigationTracker />
+
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-40">
         <div className="flex flex-col h-full m-3 mr-0 bg-surface/90 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-4xl shadow-card dark:shadow-card-dark border border-white/50 dark:border-white/10 overflow-hidden">
           <div className="p-6 pb-4">
             <Link to="/" className="block">
@@ -71,54 +105,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <main
-        className={`relative z-0 flex-1 flex flex-col min-h-0 md:ml-64 ${
-          isPractices ? 'overflow-hidden' : 'overflow-y-auto'
-        } pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8`}
-      >
-        <div
-          className={`max-w-lg mx-auto w-full flex-1 flex flex-col min-h-0 ${
-            isPractices ? 'md:px-6 md:py-8' : 'px-4 py-5 md:py-8 md:px-6 animate-fade-in'
+      {/* Mobile: main + tab bar in one column (no fixed overlap) */}
+      <div className="flex min-h-0 flex-1 flex-col md:contents">
+        <main
+          className={`flex min-h-0 flex-1 flex-col md:ml-64 md:pb-8 ${
+            isPractices ? 'overflow-hidden' : 'overflow-y-auto'
           }`}
         >
-          {children}
-        </div>
-      </main>
+          <div
+            className={`mx-auto flex w-full max-w-lg flex-1 flex-col min-h-0 ${
+              isPractices ? 'md:px-6 md:py-8' : 'px-4 py-5 md:py-8 md:px-6 animate-fade-in'
+            }`}
+          >
+            {children}
+          </div>
+        </main>
 
-        <UpdatePrompt />
-        <InstallPrompt />
+        <MobileTabBar pathname={location.pathname} />
       </div>
 
-      {/* Mobile tab bar — outside overflow-hidden so taps reach links on iOS/PWA */}
-      <nav
-        aria-label="Основная навигация"
-        className="md:hidden fixed bottom-0 inset-x-0 z-[110] px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 pointer-events-auto"
-      >
-        <div className="bg-surface/90 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-3xl shadow-nav dark:shadow-nav-dark border border-white/60 dark:border-white/10 flex items-stretch px-0.5 py-1">
-          {NAV_ITEMS.map(({ path, label, Icon }) => {
-            const active = isActive(location.pathname, path);
-            return (
-              <Link
-                key={path}
-                to={path}
-                className={`relative z-10 flex-1 flex flex-col items-center justify-center gap-0.5 py-2 rounded-2xl transition-all duration-150 min-w-0 ${
-                  active ? 'text-terracotta' : 'text-graphite-tertiary dark:text-graphite-tertiary-dark'
-                }`}
-              >
-                <Icon
-                  filled={active}
-                  className={`w-[21px] h-[21px] ${active ? 'scale-105' : ''} transition-transform`}
-                />
-                <span
-                  className={`text-[9px] font-medium truncate w-full text-center leading-tight ${active ? 'opacity-100' : 'opacity-80'}`}
-                >
-                  {label}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-    </>
+      <UpdatePrompt />
+      <InstallPrompt />
+    </div>
   );
 }

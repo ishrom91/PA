@@ -39,7 +39,6 @@ export default function PracticeModePicker({
   const location = useLocation();
   const [open, setOpen] = useState(initialOpen);
   const rootRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const initialOpenHandled = useRef(false);
 
   const selected = getPracticeById(selectedId);
@@ -65,22 +64,16 @@ export default function PracticeModePicker({
 
   useEffect(() => {
     if (!open) return;
-    const onClick = (e: MouseEvent) => {
+    const onPointerDown = (e: PointerEvent) => {
       const target = e.target as Node;
       if (rootRef.current?.contains(target)) return;
       if (dropdownAnchorRef?.current?.contains(target)) return;
+      if (target instanceof Element && target.closest('[aria-label="Основная навигация"]')) return;
       setOpen(false);
     };
-    document.addEventListener('click', onClick);
-    return () => document.removeEventListener('click', onClick);
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [open, dropdownAnchorRef]);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
 
   const pick = (id: PracticeId) => {
     if (id === selectedId) {
@@ -132,7 +125,6 @@ export default function PracticeModePicker({
     <>
       <div ref={rootRef} className={`relative min-w-0 ${className}`}>
         <button
-          ref={buttonRef}
           type="button"
           className={`relative w-full ${buttonClassName}`}
           onClick={() => setOpen((v) => !v)}
@@ -162,11 +154,9 @@ export default function PracticeModePicker({
       {dropdown && dropdownHost && createPortal(dropdown, dropdownHost)}
 
       {open && (
-        <button
-          type="button"
-          className="fixed inset-x-0 top-0 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-[60] bg-graphite/10 dark:bg-black/30 md:hidden"
-          aria-label="Закрыть"
-          onClick={() => setOpen(false)}
+        <div
+          className="fixed inset-0 z-[40] bg-graphite/10 dark:bg-black/30 pointer-events-none md:hidden"
+          aria-hidden
         />
       )}
     </>
