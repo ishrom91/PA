@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
+import { useLocation } from 'react-router-dom';
 import { IconCheck, IconChevron } from './Icons';
 import {
   getPracticeById,
@@ -35,12 +36,17 @@ export default function PracticeModePicker({
   initialOpen = false,
   onBeforeSelect,
 }: PracticeModePickerProps) {
+  const location = useLocation();
   const [open, setOpen] = useState(initialOpen);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const initialOpenHandled = useRef(false);
 
   const selected = getPracticeById(selectedId);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!initialOpen || initialOpenHandled.current) return;
@@ -158,7 +164,7 @@ export default function PracticeModePicker({
       {open && (
         <button
           type="button"
-          className="fixed inset-0 z-[70] bg-graphite/10 dark:bg-black/30 md:hidden"
+          className="fixed inset-x-0 top-0 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-[60] bg-graphite/10 dark:bg-black/30 md:hidden"
           aria-label="Закрыть"
           onClick={() => setOpen(false)}
         />

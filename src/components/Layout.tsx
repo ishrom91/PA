@@ -30,10 +30,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isPractices = location.pathname.startsWith('/practices');
 
   return (
-    <div className="h-dvh max-h-dvh flex flex-col md:flex-row md:h-auto md:max-h-none md:min-h-screen overflow-hidden md:overflow-visible">
-      <NavigationTracker />
-      {/* Desktop sidebar */}
-      <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-40">
+    <>
+      <div className="h-dvh max-h-dvh flex flex-col md:flex-row md:h-auto md:max-h-none md:min-h-screen overflow-hidden md:overflow-visible">
+        <NavigationTracker />
+        {/* Desktop sidebar */}
+        <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-40">
         <div className="flex flex-col h-full m-3 mr-0 bg-surface/90 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-4xl shadow-card dark:shadow-card-dark border border-white/50 dark:border-white/10 overflow-hidden">
           <div className="p-6 pb-4">
             <Link to="/" className="block">
@@ -84,13 +85,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </main>
 
-      <UpdatePrompt />
-      <InstallPrompt />
+        <UpdatePrompt />
+        <InstallPrompt />
+      </div>
 
-      {/* Mobile tab bar */}
+      {/* Mobile tab bar — outside overflow-hidden so taps reach links on iOS/PWA */}
       <nav
         aria-label="Основная навигация"
-        className="md:hidden fixed bottom-0 inset-x-0 z-[100] px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2"
+        className="md:hidden fixed bottom-0 inset-x-0 z-[110] px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 pointer-events-auto"
       >
         <div className="bg-surface/90 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-3xl shadow-nav dark:shadow-nav-dark border border-white/60 dark:border-white/10 flex items-stretch px-0.5 py-1">
           {NAV_ITEMS.map(({ path, label, Icon }) => {
@@ -99,7 +101,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link
                 key={path}
                 to={path}
-                className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 rounded-2xl transition-all duration-150 min-w-0 ${
+                className={`relative z-10 flex-1 flex flex-col items-center justify-center gap-0.5 py-2 rounded-2xl transition-all duration-150 min-w-0 ${
                   active ? 'text-terracotta' : 'text-graphite-tertiary dark:text-graphite-tertiary-dark'
                 }`}
               >
@@ -117,6 +119,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           })}
         </div>
       </nav>
-    </div>
+    </>
   );
 }
