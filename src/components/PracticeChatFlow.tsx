@@ -124,7 +124,7 @@ export default function PracticeChatFlow({
     [],
   );
 
-  const { messages, sendMessage, setMessages, status } = useChat({
+  const { messages, sendMessage, setMessages, status, stop } = useChat({
     transport,
     messages: [stepIntroMessage(steps[0], 'intro-0')],
   });
@@ -132,6 +132,18 @@ export default function PracticeChatFlow({
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, stepIndex, saved]);
+
+  useEffect(() => () => {
+    void stop();
+  }, [stop]);
+
+  useEffect(() => {
+    const onBeforeNavigate = () => {
+      void stop();
+    };
+    window.addEventListener('pa:before-navigate', onBeforeNavigate);
+    return () => window.removeEventListener('pa:before-navigate', onBeforeNavigate);
+  }, [stop]);
 
   const current = steps[stepIndex];
   const isLast = stepIndex === steps.length - 1;

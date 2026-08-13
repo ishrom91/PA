@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "node scripts/generate-pwa-icons.mjs && tsc --noEmit && vite build",
     "preview": "vite preview",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "generate:book": "node scripts/generate-bookData.mjs --from-docx"
   },
   "dependencies": {
@@ -21,6 +23,7 @@
     "react-router-dom": "^7.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppStateContext';
 import PracticeChatFlow, {
@@ -29,13 +29,19 @@ export default function PracticesPage() {
   const { todayEntry, ...app } = useApp();
   const paramId = params.get('p');
   const openPicker = params.get('group') === 'day';
-  const headerRowRef = useRef<HTMLDivElement>(null);
   const [selectedId, setSelectedId] = useState<PracticeId>(() =>
     isValidPracticeId(paramId) ? paramId : DEFAULT_PRACTICE_ID,
   );
   const [chatKey, setChatKey] = useState(0);
   const [headerAction, setHeaderAction] = useState<PracticeHeaderAction | null>(null);
   const [chatState, setChatState] = useState<PracticeChatState | null>(null);
+  const [chatMounted, setChatMounted] = useState(true);
+
+  useEffect(() => {
+    const onBeforeNavigate = () => setChatMounted(false);
+    window.addEventListener('pa:before-navigate', onBeforeNavigate);
+    return () => window.removeEventListener('pa:before-navigate', onBeforeNavigate);
+  }, []);
 
   useEffect(() => {
     if (isValidPracticeId(paramId)) {
@@ -100,7 +106,7 @@ export default function PracticesPage() {
   return (
     <div className="flex flex-col flex-1 min-h-0 animate-fade-in">
       <header className="shrink-0 z-20 px-3 pt-2 pb-1 bg-gradient-to-b from-cream dark:from-cream-dark from-85% to-transparent">
-        <div ref={headerRowRef} className="relative flex w-full items-stretch gap-2">
+        <div className="relative flex w-full items-stretch gap-2">
           <PracticeModePicker
             selectedId={selectedId}
             onSelect={handleSelectPractice}
@@ -109,7 +115,6 @@ export default function PracticesPage() {
             buttonClassName={FLOAT_CAPSULE}
             className="flex-1 min-w-0"
             doneToday={doneToday}
-            dropdownAnchorRef={headerRowRef}
             initialOpen={openPicker}
             onBeforeSelect={trySelectPractice}
           />
@@ -147,6 +152,7 @@ export default function PracticesPage() {
         )}
       </header>
 
+      {chatMounted && (
       <PracticeChatFlow
         key={`${selectedId}-${chatKey}`}
         embedded
@@ -162,6 +168,7 @@ export default function PracticesPage() {
             : `${selected.title} записана в журнал`
         }
       />
+      )}
     </div>
   );
 }
