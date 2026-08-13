@@ -6,7 +6,7 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   email text,
   display_name text,
-  share_for_training boolean not null default false,
+  share_for_training boolean not null default true,
   created_at timestamptz not null default now()
 );
 
@@ -47,7 +47,8 @@ create table if not exists public.notes (
   updated_at timestamptz not null default now()
 );
 
--- Anonymous training corpus (no user_id)
+-- Anonymous training corpus (no user_id — opt-in via profiles.share_for_training)
+-- practice_type: morning | evening | mentor_chat | note_added | page_view | …
 create table if not exists public.training_data (
   id uuid primary key default gen_random_uuid(),
   practice_type text not null,
@@ -63,11 +64,12 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.profiles (id, email, display_name)
+  insert into public.profiles (id, email, display_name, share_for_training)
   values (
     new.id,
     new.email,
-    coalesce(new.raw_user_meta_data->>'display_name', split_part(new.email, '@', 1))
+    coalesce(new.raw_user_meta_data->>'display_name', split_part(new.email, '@', 1)),
+    coalesce((new.raw_user_meta_data->>'share_for_training')::boolean, true)
   );
   return new;
 end;

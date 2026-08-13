@@ -5,7 +5,6 @@ import Dashboard from './pages/Dashboard';
 import PracticesPage from './pages/PracticesPage';
 import RulesPage from './pages/RulesPage';
 import BookPage from './pages/BookPage';
-import NotesPage from './pages/NotesPage';
 import JournalPage from './pages/JournalPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -26,7 +25,7 @@ export default function AppShell() {
           <Route path="/evening" element={<Navigate to="/practices?p=evening" replace />} />
           <Route path="/rules" element={<RulesPage />} />
           <Route path="/book" element={<BookPage />} />
-          <Route path="/notes" element={<NotesPage />} />
+          <Route path="/notes" element={<Navigate to="/profile#notes" replace />} />
           <Route path="/journal" element={<JournalPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />

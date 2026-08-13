@@ -42,13 +42,47 @@ export function IconMoon({ className, filled }: IconProps) {
 
 export function IconPractice({ className, filled }: IconProps) {
   return (
-    <svg className={cn('w-6 h-6', className)} viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={1.75}>
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.86 9.86 0 01-4-.8L3 20l.8-3.2A7.8 7.8 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-        fill={filled ? 'currentColor' : 'none'}
-      />
+    <svg className={cn('w-6 h-6', className)} viewBox="0 0 24 24" aria-hidden>
+      {filled ? (
+        <>
+          <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="currentColor" />
+          <text
+            x="12"
+            y="16.75"
+            textAnchor="middle"
+            fill="#fff"
+            fontSize="13.5"
+            fontWeight="700"
+            fontFamily="Georgia, 'Times New Roman', serif"
+          >
+            Ф
+          </text>
+        </>
+      ) : (
+        <>
+          <rect
+            x="3.5"
+            y="3.5"
+            width="17"
+            height="17"
+            rx="4.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+          <text
+            x="12"
+            y="16.25"
+            textAnchor="middle"
+            fill="currentColor"
+            fontSize="13"
+            fontWeight="600"
+            fontFamily="Georgia, 'Times New Roman', serif"
+          >
+            Ф
+          </text>
+        </>
+      )}
     </svg>
   );
 }
@@ -116,6 +150,14 @@ export function IconChevron({ className }: IconProps) {
   return (
     <svg className={cn('w-5 h-5', className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  );
+}
+
+export function IconSend({ className }: IconProps) {
+  return (
+    <svg className={cn('w-5 h-5', className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5M5 12l7-7 7 7" />
     </svg>
   );
 }

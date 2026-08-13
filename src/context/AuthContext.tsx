@@ -16,9 +16,7 @@ import {
   fetchRemoteStorage,
   pushStorageToRemote,
   deleteAllUserData,
-  pushTrainingSample,
 } from '../lib/sync/remote';
-import { anonymizeContent } from '../lib/anonymize';
 import { createInitialStorage } from '../utils/rules';
 
 interface AuthContextValue {
@@ -28,7 +26,12 @@ interface AuthContextValue {
   loading: boolean;
   isConfigured: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signUp: (email: string, password: string, displayName?: string) => Promise<{ error: string | null }>;
+  signUp: (
+    email: string,
+    password: string,
+    displayName?: string,
+    shareForTraining?: boolean,
+  ) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: string | null }>;
   refreshProfile: () => Promise<void>;
@@ -37,7 +40,30 @@ interface AuthContextValue {
   mergeLocalOnAuth: (local: AppStorage) => Promise<AppStorage>;
   scheduleSync: (storage: AppStorage) => void;
   syncNow: (storage: AppStorage) => Promise<void>;
+  lastSyncedAt: number | null;
+  syncing: boolean;
   deleteAccount: () => Promise<{ error: string | null }>;
+}
+
+const LAST_SYNC_KEY = 'pa-last-sync';
+
+function readLastSyncedAt(): number | null {
+  try {
+    const raw = localStorage.getItem(LAST_SYNC_KEY);
+    if (!raw) return null;
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeLastSyncedAt(ts: number) {
+  try {
+    localStorage.setItem(LAST_SYNC_KEY, String(ts));
+  } catch {
+    /* ignore */
+  }
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -58,6 +84,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(isSupabaseConfigured);
+  const [lastSyncedAt, setLastSyncedAt] = useState<number | null>(() => readLastSyncedAt());
+  const [syncing, setSyncing] = useState(false);
   const syncTimer = useRef<number | undefined>(undefined);
   const profileRef = useRef(profile);
   profileRef.current = profile;
@@ -104,15 +132,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, displayName?: string) => {
-    if (!supabase) return { error: 'Supabase не настроен' };
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { display_name: displayName ?? email.split('@')[0] } },
-    });
-    return { error: error?.message ?? null };
-  }, []);
+  const signUp = useCallback(
+    async (email: string, password: string, displayName?: string, shareForTraining = true) => {
+      if (!supabase) return { error: 'Supabase не настроен' };
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            display_name: displayName ?? email.split('@')[0],
+            share_for_training: shareForTraining,
+          },
+        },
+      });
+      return { error: error?.message ?? null };
+    },
+    [],
+  );
 
   const signOut = useCallback(async () => {
     if (supabase) await supabase.auth.signOut();
@@ -151,12 +187,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user, refreshProfile],
   );
 
+  const markSynced = useCallback(() => {
+    const ts = Date.now();
+    setLastSyncedAt(ts);
+    writeLastSyncedAt(ts);
+  }, []);
+
   const syncNow = useCallback(
     async (storage: AppStorage) => {
       if (!user) return;
-      await pushStorageToRemote(user.id, storage);
+      setSyncing(true);
+      try {
+        await pushStorageToRemote(user.id, storage);
+        markSynced();
+      } finally {
+        setSyncing(false);
+      }
     },
-    [user],
+    [user, markSynced],
   );
 
   const scheduleSync = useCallback(
@@ -166,12 +214,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       syncTimer.current = window.setTimeout(async () => {
         try {
           await pushStorageToRemote(user.id, storage);
+          markSynced();
         } catch {
           /* offline — local copy remains source of truth */
         }
       }, 800);
     },
-    [user],
+    [user, markSynced],
   );
 
   const mergeLocalOnAuth = useCallback(
@@ -181,9 +230,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const remote = await fetchRemoteStorage(user.id, base);
       const merged = mergeAppStorage(local, remote);
       await pushStorageToRemote(user.id, merged);
+      markSynced();
       return merged;
     },
-    [user],
+    [user, markSynced],
   );
 
   const deleteAccount = useCallback(async () => {
@@ -223,6 +273,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       mergeLocalOnAuth,
       scheduleSync,
       syncNow,
+      lastSyncedAt,
+      syncing,
       deleteAccount,
     }),
     [
@@ -240,6 +292,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       mergeLocalOnAuth,
       scheduleSync,
       syncNow,
+      lastSyncedAt,
+      syncing,
       deleteAccount,
     ],
   );
@@ -251,14 +305,4 @@ export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
-}
-
-/** Called after journal save when share_for_training is on */
-export async function maybePushTraining(
-  practiceType: string,
-  content: unknown,
-  shareEnabled: boolean,
-): Promise<void> {
-  if (!shareEnabled) return;
-  await pushTrainingSample(practiceType, anonymizeContent(content));
 }

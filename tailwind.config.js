@@ -56,6 +56,7 @@ export default {
       animation: {
         'fade-in': 'fadeIn 0.25s ease-out',
         'slide-up': 'slideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
+        'message-in': 'messageIn 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         spin: 'spin 0.8s linear infinite',
       },
       keyframes: {
@@ -65,6 +66,10 @@ export default {
         },
         slideUp: {
           from: { transform: 'translateY(12px)', opacity: '0' },
+          to: { transform: 'translateY(0)', opacity: '1' },
+        },
+        messageIn: {
+          from: { transform: 'translateY(8px)', opacity: '0' },
           to: { transform: 'translateY(0)', opacity: '1' },
         },
       },

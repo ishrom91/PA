@@ -28,3 +28,16 @@ export function addDays(iso: string, days: number): string {
   d.setDate(d.getDate() + days);
   return d.toISOString().slice(0, 10);
 }
+
+/** «2 мин назад», «вчера», «ещё не синхронизировалось» */
+export function formatSyncAgo(timestamp: number | null): string {
+  if (!timestamp) return 'Ещё не синхронизировалось';
+  const diffSec = Math.floor((Date.now() - timestamp) / 1000);
+  if (diffSec < 10) return 'Только что';
+  if (diffSec < 60) return `${diffSec} сек назад`;
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin} мин назад`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr} ч назад`;
+  return formatDateShort(new Date(timestamp).toISOString().slice(0, 10));
+}

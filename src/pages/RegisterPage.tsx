@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [consentData, setConsentData] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
@@ -26,9 +27,13 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!consentData) {
+      setError('Для регистрации нужно согласие на обезличенный сбор данных');
+      return;
+    }
     setLoading(true);
     setError(null);
-    const { error: err } = await signUp(email.trim(), password, displayName.trim());
+    const { error: err } = await signUp(email.trim(), password, displayName.trim(), true);
     if (err) {
       setError(err);
       setLoading(false);
@@ -60,8 +65,23 @@ export default function RegisterPage() {
         <AuthField label="Имя" value={displayName} onChange={setDisplayName} autoComplete="name" />
         <AuthField label="Email" type="email" value={email} onChange={setEmail} autoComplete="email" required />
         <AuthField label="Пароль" type="password" value={password} onChange={setPassword} autoComplete="new-password" required />
+
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            className="mt-1 accent-terracotta shrink-0"
+            checked={consentData}
+            onChange={(e) => setConsentData(e.target.checked)}
+          />
+          <span className="text-sm text-muted leading-relaxed">
+            Соглашаюсь на обезличенный сбор записей практик, навигации по приложению, диалогов с
+            наставником и пометок к книге — для улучшения Philosophia Activa. Персональные данные
+            (имя, email) не сохраняются. Отключить можно в профиле.
+          </span>
+        </label>
+
         <AuthError message={error} />
-        <button type="submit" className="btn-primary w-full" disabled={loading}>
+        <button type="submit" className="btn-primary w-full" disabled={loading || !consentData}>
           {loading ? 'Создание…' : 'Создать аккаунт'}
         </button>
       </form>

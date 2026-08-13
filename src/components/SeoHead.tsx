@@ -23,9 +23,9 @@ const ROUTE_META: Record<string, { title: string; description: string }> = {
     title: `Книга · ${SITE}`,
     description: 'Philosophia Activa — полный текст книги Рим Рами с оглавлением и пометками.',
   },
-  '/notes': {
-    title: `Пометки · ${SITE}`,
-    description: 'Заметки к фрагментам книги Philosophia Activa.',
+  '/profile': {
+    title: `Профиль · ${SITE}`,
+    description: 'Журнал, пометки к книге, синхронизация и настройки аккаунта.',
   },
   '/journal': {
     title: `Журнал · ${SITE}`,

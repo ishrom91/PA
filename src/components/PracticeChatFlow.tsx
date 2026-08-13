@@ -1,16 +1,24 @@
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type UIMessage } from 'ai';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import StepProgress from './StepProgress';
+import { IconSend } from './Icons';
 import { hapticLight, hapticSuccess } from '../utils/haptics';
 import { MENTOR_OPENERS, type MentorPractice } from '../lib/mentor-prompts';
-import { getMessageText, messagesToTranscript } from '../lib/chat-transcript';
+import { getMessageText, messagesToTranscript, formatIntroMessage } from '../lib/chat-transcript';
 
 export interface PracticeChatStep {
   practice: MentorPractice;
   title: string;
   eyebrow?: string;
   subtitle?: string;
+}
+
+export interface PracticeHeaderAction {
+  label: string;
+  disabled: boolean;
+  hidden: boolean;
+  onClick: () => void;
 }
 
 interface PracticeChatFlowProps {
@@ -21,18 +29,48 @@ interface PracticeChatFlowProps {
   doneTitle?: string;
   doneSubtitle?: string;
   embedded?: boolean;
+  fillHeight?: boolean;
+  saveInHeader?: boolean;
+  onHeaderAction?: (action: PracticeHeaderAction) => void;
   savedHint?: string;
 }
 
 function stepIntroMessage(step: PracticeChatStep, id: string): UIMessage {
-  const opener = MENTOR_OPENERS[step.practice];
-  const prefix = step.eyebrow ? `${step.eyebrow} · ` : '';
-  const subtitle = step.subtitle ? `\n\n${step.subtitle}` : '';
+  const header = step.eyebrow ? `${step.eyebrow} · ${step.title}` : step.title;
+  const text = formatIntroMessage(header, MENTOR_OPENERS[step.practice], step.subtitle);
   return {
     id,
     role: 'assistant',
-    parts: [{ type: 'text', text: `${prefix}${step.title}${subtitle}\n\n${opener}` }],
+    parts: [{ type: 'text', text }],
   };
+}
+
+function ChatMessageText({ text }: { text: string }) {
+  const newline = text.indexOf('\n');
+  const header = newline === -1 ? text : text.slice(0, newline);
+  const body = newline === -1 ? '' : text.slice(newline + 1);
+  const hasHeader = header.includes(' · ');
+
+  if (!hasHeader) {
+    return <p className="whitespace-pre-line">{text}</p>;
+  }
+
+  return (
+    <div>
+      <p className="font-semibold leading-snug">{header}</p>
+      {body && <p className="whitespace-pre-line mt-1.5">{body}</p>}
+    </div>
+  );
+}
+
+function MentorAvatar({ className }: { className?: string }) {
+  return (
+    <div
+      className={`w-7 h-7 rounded-full bg-gradient-to-br from-terracotta/90 to-terracotta flex items-center justify-center shrink-0 shadow-sm ${className ?? ''}`}
+    >
+      <span className="font-display text-[11px] font-bold text-white leading-none">Ф</span>
+    </div>
+  );
 }
 
 export default function PracticeChatFlow({
@@ -43,6 +81,9 @@ export default function PracticeChatFlow({
   doneTitle = 'Практика записана',
   doneSubtitle = 'Диалог сохранён в журнал',
   embedded = false,
+  fillHeight = false,
+  saveInHeader = false,
+  onHeaderAction,
   savedHint = 'Записано в журнал',
 }: PracticeChatFlowProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -96,7 +137,7 @@ export default function PracticeChatFlow({
     setInput('');
   };
 
-  const handleStepComplete = () => {
+  const handleStepComplete = useCallback(() => {
     if (messages.length < 2 || saved) return;
     hapticLight();
 
@@ -131,7 +172,40 @@ export default function PracticeChatFlow({
     if (!embedded) {
       setFinished(true);
     }
-  };
+  }, [
+    messages,
+    saved,
+    stepStartIndex,
+    transcripts,
+    isLast,
+    stepIndex,
+    steps,
+    setMessages,
+    onComplete,
+    savedHint,
+    embedded,
+  ]);
+
+  const saveLabel =
+    lastAssistantText.includes('Записать это в журнал') || isLast ? 'В журнал' : 'Далее';
+
+  useEffect(() => {
+    if (!saveInHeader || !onHeaderAction) return;
+    onHeaderAction({
+      label: saveLabel,
+      disabled: isLoading,
+      hidden: saved || !hasUserReply,
+      onClick: handleStepComplete,
+    });
+  }, [
+    saveInHeader,
+    onHeaderAction,
+    saveLabel,
+    hasUserReply,
+    isLoading,
+    saved,
+    handleStepComplete,
+  ]);
 
   if (finished && !embedded) {
     return (
@@ -191,36 +265,57 @@ export default function PracticeChatFlow({
         )}
 
         {embedded && steps.length > 1 && (
-          <div className="px-4 py-2 border-b border-paper dark:border-paper-dark shrink-0">
-            <StepProgress
-              current={stepIndex + 1}
-              total={steps.length}
-              labels={steps.map((s) => s.title.split('·').pop()?.trim() ?? s.title)}
-            />
+          <div className="shrink-0 px-4 pt-2.5 pb-1">
+            <StepProgress compact current={stepIndex + 1} total={steps.length} />
           </div>
         )}
 
-        <div className={`flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0 ${embedded ? 'max-h-[50dvh] md:max-h-none' : ''}`}>
-          {messages.map((m) => (
-            <div
-              key={m.id}
-              className={`text-sm leading-relaxed rounded-2xl px-3 py-2 max-w-[95%] ${
-                m.role === 'user'
-                  ? 'ml-auto bg-terracotta text-white'
-                  : m.id.startsWith('saved-')
-                    ? 'mr-auto bg-terracotta/10 text-terracotta border border-terracotta/20'
-                    : 'mr-auto bg-cream dark:bg-cream-dark text-graphite dark:text-graphite-dark'
-              }`}
-            >
-              {getMessageText(m)}
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0 scroll-smooth">
+          {messages.map((m) => {
+            const text = getMessageText(m);
+            const isUser = m.role === 'user';
+            const isSaved = m.id.startsWith('saved-');
+
+            if (isUser) {
+              return (
+                <div key={m.id} className="flex justify-end animate-message-in">
+                  <div className="max-w-[85%] text-[15px] leading-relaxed rounded-[1.25rem] rounded-br-md px-4 py-2.5 bg-terracotta text-white">
+                    <ChatMessageText text={text} />
+                  </div>
+                </div>
+              );
+            }
+
+            return (
+              <div key={m.id} className="flex gap-2.5 items-end max-w-[92%] animate-message-in">
+                <MentorAvatar className="mb-0.5" />
+                <div
+                  className={`text-[15px] leading-relaxed rounded-[1.25rem] rounded-bl-md px-4 py-2.5 ${
+                    isSaved
+                      ? 'bg-olive-soft/90 dark:bg-olive-soft-dark/90 text-olive'
+                      : 'bg-cream/70 dark:bg-cream-dark/70 text-graphite dark:text-graphite-dark'
+                  }`}
+                >
+                  <ChatMessageText text={text} />
+                </div>
+              </div>
+            );
+          })}
+          {isLoading && (
+            <div className="flex gap-2.5 items-end animate-message-in">
+              <MentorAvatar className="mb-0.5" />
+              <div className="flex items-center gap-1 px-4 py-3 rounded-[1.25rem] rounded-bl-md bg-cream/70 dark:bg-cream-dark/70">
+                <span className="w-2 h-2 rounded-full bg-graphite-tertiary dark:bg-graphite-tertiary-dark animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-graphite-tertiary dark:bg-graphite-tertiary-dark animate-pulse [animation-delay:150ms]" />
+                <span className="w-2 h-2 rounded-full bg-graphite-tertiary dark:bg-graphite-tertiary-dark animate-pulse [animation-delay:300ms]" />
+              </div>
             </div>
-          ))}
-          {isLoading && <p className="text-xs text-faint animate-pulse">Наставник думает…</p>}
+          )}
           <div ref={bottomRef} />
         </div>
 
-        {!saved && (
-          <div className="px-3 pt-2 pb-1 shrink-0 border-t border-paper dark:border-paper-dark bg-cream/30 dark:bg-cream-dark/30">
+        {!saved && !saveInHeader && (
+          <div className="px-3 pt-2 pb-1 shrink-0 border-t border-paper/70 dark:border-paper-dark/70 bg-surface/95 dark:bg-surface-dark/95 backdrop-blur-sm">
             <button
               type="button"
               className="btn-primary w-full text-sm"
@@ -236,29 +331,40 @@ export default function PracticeChatFlow({
 
         <form
           onSubmit={handleSubmit}
-          className="p-3 border-t border-paper dark:border-paper-dark flex gap-2 shrink-0 bg-surface dark:bg-surface-dark"
+          className="shrink-0 px-3 pb-3 pt-1"
         >
-          <input
-            className="input-field flex-1 !py-2.5 text-sm"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={saved ? 'Выберите другую практику…' : 'Ваш ответ…'}
-            disabled={isLoading || saved}
-          />
-          <button
-            type="submit"
-            className="btn-primary !px-4 !py-2.5 text-sm shrink-0"
-            disabled={isLoading || saved || !input.trim()}
-          >
-            →
-          </button>
+          <div className="flex items-end gap-2 rounded-[1.75rem] bg-surface dark:bg-surface-dark shadow-float dark:shadow-float-dark ring-1 ring-black/[0.05] dark:ring-white/[0.08] pl-4 pr-1.5 py-1.5 focus-within:ring-terracotta/25 transition-shadow">
+            <input
+              className="flex-1 min-w-0 bg-transparent border-0 py-2.5 text-[15px] text-graphite dark:text-graphite-dark placeholder:text-graphite-tertiary dark:placeholder:text-graphite-tertiary-dark focus:outline-none"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={saved ? 'Выберите другую практику…' : 'Сообщение…'}
+              disabled={isLoading || saved}
+            />
+            <button
+              type="submit"
+              className={`w-9 h-9 flex items-center justify-center shrink-0 rounded-full transition-all ${
+                input.trim() && !isLoading && !saved
+                  ? 'bg-terracotta text-white shadow-sm hover:bg-terracotta/90 active:scale-95'
+                  : 'bg-paper dark:bg-paper-dark text-faint'
+              }`}
+              disabled={isLoading || saved || !input.trim()}
+              aria-label="Отправить"
+            >
+              <IconSend className="w-[18px] h-[18px]" />
+            </button>
+          </div>
         </form>
       </div>
     </>
   );
 
   if (embedded) {
-    return chatBody;
+    return (
+      <div className={fillHeight ? 'flex flex-col flex-1 min-h-0' : undefined}>
+        {chatBody}
+      </div>
+    );
   }
 
   return <div className="space-y-4 animate-fade-in">{chatBody}</div>;

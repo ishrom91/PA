@@ -1,48 +1,36 @@
-import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import InstallPrompt from './InstallPrompt';
 import UpdatePrompt from './UpdatePrompt';
+import NavigationTracker from './NavigationTracker';
 import {
   IconHome,
   IconPractice,
-  IconMore,
   IconRules,
   IconBook,
-  IconNotes,
-  IconJournal,
-  IconChevron,
   IconProfile,
 } from './Icons';
 
-const PRIMARY_TABS = [
+const NAV_ITEMS = [
   { path: '/', label: 'Главная', Icon: IconHome },
+  { path: '/rules', label: 'Правила', Icon: IconRules },
   { path: '/practices', label: 'Практики', Icon: IconPractice },
-  { path: '/journal', label: 'Журнал', Icon: IconJournal },
   { path: '/book', label: 'Книга', Icon: IconBook },
+  { path: '/profile', label: 'Профиль', Icon: IconProfile },
 ] as const;
-
-const MORE_ITEMS = [
-  { path: '/rules', label: 'Правила', Icon: IconRules, desc: '17 практик книги' },
-  { path: '/notes', label: 'Пометки', Icon: IconNotes, desc: 'Заметки к тексту' },
-  { path: '/profile', label: 'Профиль', Icon: IconProfile, desc: 'Аккаунт и синхронизация' },
-] as const;
-
-const DESKTOP_NAV = [
-  ...PRIMARY_TABS,
-  ...MORE_ITEMS.map(({ path, label, Icon }) => ({ path, label, Icon })),
-];
 
 function isActive(pathname: string, path: string) {
+  if (path === '/profile') {
+    return pathname === '/profile' || pathname === '/notes';
+  }
   return path === '/' ? pathname === '/' : pathname.startsWith(path);
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
-  const [moreOpen, setMoreOpen] = useState(false);
-  const moreActive = MORE_ITEMS.some((i) => isActive(location.pathname, i.path));
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
+      <NavigationTracker />
       {/* Desktop sidebar */}
       <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-40">
         <div className="flex flex-col h-full m-3 mr-0 bg-surface/90 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-4xl shadow-card dark:shadow-card-dark border border-white/50 dark:border-white/10 overflow-hidden">
@@ -55,7 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
           <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">
-            {DESKTOP_NAV.map(({ path, label, Icon }) => {
+            {NAV_ITEMS.map(({ path, label, Icon }) => {
               const active = isActive(location.pathname, path);
               return (
                 <Link
@@ -87,77 +75,36 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </main>
 
-      {/* PWA install banner (Chrome / Edge / Android) */}
       <UpdatePrompt />
       <InstallPrompt />
 
-      {/* Mobile tab bar — iOS-style floating glass */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 pointer-events-none">
-        <div className="pointer-events-auto bg-surface/85 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-3xl shadow-nav dark:shadow-nav-dark border border-white/60 dark:border-white/10 flex items-stretch px-1 py-1">
-          {PRIMARY_TABS.map(({ path, label, Icon }) => {
+      {/* Mobile tab bar */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 pointer-events-none">
+        <div className="pointer-events-auto bg-surface/85 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-3xl shadow-nav dark:shadow-nav-dark border border-white/60 dark:border-white/10 flex items-stretch px-0.5 py-1">
+          {NAV_ITEMS.map(({ path, label, Icon }) => {
             const active = isActive(location.pathname, path);
             return (
               <Link
                 key={path}
                 to={path}
-                onClick={() => setMoreOpen(false)}
                 className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 rounded-2xl transition-all duration-150 min-w-0 ${
                   active ? 'text-terracotta' : 'text-graphite-tertiary dark:text-graphite-tertiary-dark'
                 }`}
               >
-                <Icon filled={active} className={`w-[22px] h-[22px] ${active ? 'scale-105' : ''} transition-transform`} />
-                <span className={`text-[10px] font-medium truncate w-full text-center ${active ? 'opacity-100' : 'opacity-80'}`}>
+                <Icon
+                  filled={active}
+                  className={`w-[21px] h-[21px] ${active ? 'scale-105' : ''} transition-transform`}
+                />
+                <span
+                  className={`text-[9px] font-medium truncate w-full text-center leading-tight ${active ? 'opacity-100' : 'opacity-80'}`}
+                >
                   {label}
                 </span>
               </Link>
             );
           })}
-          <button
-            onClick={() => setMoreOpen(true)}
-            className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 rounded-2xl transition-colors min-w-0 ${
-              moreActive || moreOpen ? 'text-terracotta' : 'text-graphite-tertiary dark:text-graphite-tertiary-dark'
-            }`}
-          >
-            <IconMore className="w-[22px] h-[22px]" />
-            <span className="text-[10px] font-medium">Ещё</span>
-          </button>
         </div>
       </nav>
-
-      {/* More sheet */}
-      {moreOpen && (
-        <div className="md:hidden fixed inset-0 z-[60]">
-          <div
-            className="absolute inset-0 bg-graphite/25 backdrop-blur-sm animate-fade-in"
-            onClick={() => setMoreOpen(false)}
-          />
-          <div className="absolute bottom-0 inset-x-0 bg-surface dark:bg-surface-dark rounded-t-4xl shadow-float dark:shadow-float-dark animate-slide-up pb-[calc(1rem+env(safe-area-inset-bottom))]">
-            <div className="w-10 h-1 bg-paper rounded-full mx-auto mt-3 mb-4" />
-            <p className="px-5 text-[13px] font-semibold uppercase tracking-wider text-muted mb-3">
-              Справочник и настройки
-            </p>
-            <div className="px-3 space-y-1">
-              {MORE_ITEMS.map(({ path, label, Icon, desc }) => (
-                <Link
-                  key={path}
-                  to={path}
-                  onClick={() => setMoreOpen(false)}
-                  className="flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-cream dark:hover:bg-cream-dark active:bg-cream dark:active:bg-cream-dark transition-colors"
-                >
-                  <div className="w-10 h-10 rounded-2xl bg-terracotta-soft dark:bg-terracotta-soft-dark flex items-center justify-center text-terracotta">
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-[15px] text-graphite dark:text-graphite-dark">{label}</p>
-                    <p className="text-[13px] text-muted">{desc}</p>
-                  </div>
-                  <IconChevron className="text-faint shrink-0" />
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
