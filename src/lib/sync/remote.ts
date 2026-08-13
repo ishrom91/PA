@@ -44,6 +44,14 @@ export function appStorageToRemoteRows(userId: string, storage: AppStorage) {
         content: { text: entry.virtueIntention },
       });
     }
+    if (entry.mentorChat?.trim()) {
+      journalRows.push({
+        user_id: userId,
+        entry_date: entry.date,
+        practice_type: 'mentor_chat',
+        content: { text: entry.mentorChat },
+      });
+    }
     if (entry.day?.phronesis) {
       journalRows.push({
         user_id: userId,
@@ -120,6 +128,9 @@ export function remoteRowsToAppStorage(
         break;
       case 'virtue_intention':
         entry.virtueIntention = (c as { text?: string }).text;
+        break;
+      case 'mentor_chat':
+        entry.mentorChat = (c as { text?: string }).text;
         break;
       case 'phronesis':
       case 'threeQuestions':

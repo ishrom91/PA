@@ -83,6 +83,7 @@ export interface JournalEntry {
   day?: DayEntries;
   evening?: EveningEntry;
   virtueIntention?: string;
+  mentorChat?: string;
 }
 
 export interface Note {

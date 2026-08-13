@@ -14,6 +14,7 @@ import type { AppState } from '../hooks/useAppState';
 export type PracticeGroup = 'morning' | 'evening' | 'day';
 
 export type PracticeId =
+  | 'free'
   | 'morning'
   | 'evening'
   | 'phronesis'
@@ -41,6 +42,14 @@ export function getGroupLabel(group: PracticeGroup): string {
 }
 
 export const PRACTICE_CATALOG: PracticeDefinition[] = [
+  {
+    id: 'free',
+    group: 'day',
+    title: 'Свободный разговор',
+    subtitle: 'Просто поговорить с наставником',
+    tradition: 'Philosophia Activa',
+    getSteps: () => [{ practice: 'free', title: 'Свободный разговор', eyebrow: 'Наставник' }],
+  },
   {
     id: 'morning',
     group: 'morning',
@@ -126,6 +135,8 @@ export function isValidPracticeId(id: string | null): id is PracticeId {
 export function isPracticeDoneToday(id: PracticeId, entry?: JournalEntry): boolean {
   if (!entry) return false;
   switch (id) {
+    case 'free':
+      return !!entry.mentorChat?.trim();
     case 'morning':
       return !!entry.morning;
     case 'evening':
@@ -146,9 +157,12 @@ export function isPracticeDoneToday(id: PracticeId, entry?: JournalEntry): boole
 export function savePracticeToJournal(
   id: PracticeId,
   transcripts: string[],
-  app: Pick<AppState, 'saveMorning' | 'saveEvening' | 'saveDayPractice'>,
+  app: Pick<AppState, 'saveMorning' | 'saveEvening' | 'saveDayPractice' | 'saveMentorChat'>,
 ): void {
   switch (id) {
+    case 'free':
+      app.saveMentorChat(transcripts[0] ?? '');
+      break;
     case 'morning':
       app.saveMorning(transcriptsToMorningEntry(transcripts));
       break;

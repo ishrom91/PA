@@ -112,6 +112,14 @@ export function useAppState(options?: {
     [upsertToday],
   );
 
+  const saveMentorChat = useCallback(
+    (transcript: string) => {
+      upsertToday({ mentorChat: transcript });
+      hapticSuccess();
+    },
+    [upsertToday],
+  );
+
   const completeOnboarding = useCallback(() => {
     persist((prev) => ({ ...prev, onboardingCompleted: true }));
   }, [persist]);
@@ -191,6 +199,7 @@ export function useAppState(options?: {
     saveDayPractice,
     saveEvening,
     saveVirtueIntention,
+    saveMentorChat,
     completeOnboarding,
     activateRuleByNumber,
     integrateRuleByNumber,

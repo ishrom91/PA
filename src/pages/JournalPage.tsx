@@ -79,6 +79,7 @@ export default function JournalPage() {
               entry.morning && 'утро',
               entry.day && Object.keys(entry.day).length > 0 && 'день',
               entry.evening && 'вечер',
+              entry.mentorChat && 'разговор',
             ].filter(Boolean);
 
             return (
@@ -107,6 +108,12 @@ function DayDetail({ entry }: { entry: import('../types').JournalEntry }) {
       {entry.virtueIntention && (
         <Section title="Намерение добродетели">
           <p>{entry.virtueIntention}</p>
+        </Section>
+      )}
+
+      {entry.mentorChat && (
+        <Section title="Разговор с наставником">
+          <p className="whitespace-pre-wrap text-sm leading-relaxed">{entry.mentorChat}</p>
         </Section>
       )}
 
@@ -178,7 +185,7 @@ function DayDetail({ entry }: { entry: import('../types').JournalEntry }) {
         </Section>
       )}
 
-      {!entry.morning && !entry.day && !entry.evening && !entry.virtueIntention && (
+      {!entry.morning && !entry.day && !entry.evening && !entry.virtueIntention && !entry.mentorChat && (
         <p className="text-graphite-secondary dark:text-graphite-secondary-dark text-sm italic">Пустой день.</p>
       )}
     </div>

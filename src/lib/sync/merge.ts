@@ -29,6 +29,7 @@ function mergeJournalEntry(a: JournalEntry, b: JournalEntry): JournalEntry {
   return {
     date: a.date,
     virtueIntention: pickNewerString(a.virtueIntention, b.virtueIntention, a, b),
+    mentorChat: pickNewerString(a.mentorChat, b.mentorChat, a, b),
     morning: pickNewerPractice(a.morning, b.morning),
     day: {
       ...a.day,
