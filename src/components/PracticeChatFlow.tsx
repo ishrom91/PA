@@ -339,11 +339,15 @@ export default function PracticeChatFlow({
                 <div
                   className={`text-[15px] leading-relaxed rounded-[1.25rem] rounded-bl-md px-4 py-2.5 ${
                     isSaved
-                      ? 'bg-olive-soft/90 dark:bg-olive-soft-dark/90 text-olive'
+                      ? 'bg-olive-soft dark:bg-olive-soft-dark text-graphite dark:text-graphite-dark ring-1 ring-olive/25 dark:ring-olive/35'
                       : 'bg-cream/70 dark:bg-cream-dark/70 text-graphite dark:text-graphite-dark'
                   }`}
                 >
-                  <ChatMessageText text={text} />
+                  {isSaved ? (
+                    <p className="whitespace-pre-line font-medium">{text}</p>
+                  ) : (
+                    <ChatMessageText text={text} />
+                  )}
                 </div>
               </div>
             );
