@@ -11,7 +11,8 @@ export default defineConfig(({ mode }) => {
     react(),
     devApiPlugin(env),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
+      injectRegister: false,
       includeAssets: ['favicon.svg', 'icon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Philosophia Activa — дневник практик',
