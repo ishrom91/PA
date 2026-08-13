@@ -10,6 +10,7 @@
     "generate:book": "node scripts/generate-bookData.mjs --from-docx"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^4.0.28",
     "@ai-sdk/openai": "^4.0.41",
     "@ai-sdk/react": "^4.0.67",
     "@supabase/supabase-js": "^2.112.3",
