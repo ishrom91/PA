@@ -60,8 +60,8 @@ export default function PracticesPage() {
   const showSave = headerAction && !headerAction.hidden;
 
   return (
-    <div className="flex flex-col -mx-4 -mt-5 md:-mx-6 md:-mt-8 min-h-[calc(100dvh-5.5rem-env(safe-area-inset-bottom))] md:min-h-[calc(100vh-6rem)] animate-fade-in bg-surface dark:bg-surface-dark">
-      <header className="relative z-[55] shrink-0 px-4 pt-3 pb-2.5 bg-surface/80 dark:bg-surface-dark/80 backdrop-blur-2xl shadow-[0_1px_0_rgba(0,0,0,0.04)] dark:shadow-[0_1px_0_rgba(255,255,255,0.06)]">
+    <div className="flex flex-col flex-1 min-h-0 animate-fade-in">
+      <header className="shrink-0 px-4 pt-2 pb-2.5 border-b border-paper/50 dark:border-paper-dark/50">
         <div className="flex items-center gap-2.5">
           <PracticeModePicker
             selectedId={selectedId}

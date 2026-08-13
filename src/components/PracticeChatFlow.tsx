@@ -329,10 +329,7 @@ export default function PracticeChatFlow({
           </div>
         )}
 
-        <form
-          onSubmit={handleSubmit}
-          className="shrink-0 relative z-[55] px-3 pt-1 pb-[calc(0.75rem+env(safe-area-inset-bottom))] md:pb-3 bg-surface/90 dark:bg-surface-dark/90 backdrop-blur-xl"
-        >
+        <form onSubmit={handleSubmit} className="shrink-0 px-3 pt-2 pb-1">
           <div className="flex items-end gap-2 rounded-[1.75rem] bg-surface dark:bg-surface-dark shadow-float dark:shadow-float-dark ring-1 ring-black/[0.05] dark:ring-white/[0.08] pl-4 pr-1.5 py-1.5 focus-within:ring-terracotta/25 transition-shadow">
             <input
               className="flex-1 min-w-0 bg-transparent border-0 py-2.5 text-[15px] text-graphite dark:text-graphite-dark placeholder:text-graphite-tertiary dark:placeholder:text-graphite-tertiary-dark focus:outline-none"

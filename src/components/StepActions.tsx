@@ -10,7 +10,7 @@ export default function StepActions({ children, className = '', stack = false }:
   return (
     <>
       <div
-        className={`flex gap-3 mt-6 max-md:fixed max-md:z-[55] max-md:left-4 max-md:right-4 max-md:bottom-[calc(5.25rem+env(safe-area-inset-bottom))] max-md:mt-0 max-md:p-2 max-md:rounded-2xl max-md:bg-surface/92 max-md:dark:bg-surface-dark/92 max-md:backdrop-blur-xl max-md:border max-md:border-white/60 max-md:dark:border-white/10 max-md:shadow-nav ${stack ? 'flex-col' : ''} ${className}`}
+        className={`flex gap-3 mt-6 max-md:fixed max-md:z-[55] max-md:left-4 max-md:right-4 max-md:bottom-[calc(5.75rem+env(safe-area-inset-bottom))] max-md:mt-0 max-md:p-2 max-md:rounded-2xl max-md:bg-surface/92 max-md:dark:bg-surface-dark/92 max-md:backdrop-blur-xl max-md:border max-md:border-white/60 max-md:dark:border-white/10 max-md:shadow-nav ${stack ? 'flex-col' : ''} ${className}`}
       >
         {children}
       </div>

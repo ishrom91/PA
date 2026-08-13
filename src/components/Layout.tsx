@@ -27,6 +27,7 @@ function isActive(pathname: string, path: string) {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const isPractices = location.pathname.startsWith('/practices');
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
@@ -69,8 +70,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <main className="flex-1 md:ml-64 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8">
-        <div className="max-w-lg mx-auto px-4 py-5 md:py-8 md:px-6 animate-fade-in">
+      <main
+        className={`flex-1 md:ml-64 ${
+          isPractices
+            ? 'flex flex-col min-h-0 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8'
+            : 'pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8'
+        }`}
+      >
+        <div
+          className={`max-w-lg mx-auto w-full ${
+            isPractices
+              ? 'flex flex-col flex-1 min-h-0 md:px-6 md:py-8'
+              : 'px-4 py-5 md:py-8 md:px-6 animate-fade-in'
+          }`}
+        >
           {children}
         </div>
       </main>
@@ -78,8 +91,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <UpdatePrompt />
       <InstallPrompt />
 
-      {/* Mobile tab bar */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 pointer-events-none">
+      {/* Mobile tab bar — always above page content */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-[60] px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 pointer-events-none">
         <div className="pointer-events-auto bg-surface/85 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-3xl shadow-nav dark:shadow-nav-dark border border-white/60 dark:border-white/10 flex items-stretch px-0.5 py-1">
           {NAV_ITEMS.map(({ path, label, Icon }) => {
             const active = isActive(location.pathname, path);
