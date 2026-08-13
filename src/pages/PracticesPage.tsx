@@ -61,8 +61,8 @@ export default function PracticesPage() {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 animate-fade-in">
-      <header className="shrink-0 px-4 pt-2 pb-2.5 border-b border-paper/50 dark:border-paper-dark/50">
-        <div className="flex items-center gap-2.5">
+      <header className="relative shrink-0 px-4 pt-2 pb-2 border-b border-paper/40 dark:border-paper-dark/40">
+        <div className="flex items-center justify-center min-h-[2.5rem]">
           <PracticeModePicker
             selectedId={selectedId}
             onSelect={selectPractice}
@@ -70,28 +70,29 @@ export default function PracticesPage() {
             todayEntry={todayEntry}
           />
 
-          <div className="flex items-center gap-2 shrink-0 ml-auto">
-            {showSave && (
-              <button
-                type="button"
-                className="shrink-0 rounded-full px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap bg-terracotta text-white shadow-sm hover:bg-terracotta/90 active:scale-[0.97] transition-all animate-message-in disabled:opacity-50 disabled:pointer-events-none"
-                disabled={headerAction.disabled}
-                onClick={headerAction.onClick}
-              >
-                {headerAction.label}
-              </button>
-            )}
-            {doneToday && (
-              <span className="chip-done !text-[11px] !py-1 !px-2.5 !gap-1">
-                <IconCheck className="w-3 h-3" />
-                Сегодня
-              </span>
-            )}
-          </div>
+          {(showSave || doneToday) && (
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+              {showSave && (
+                <button
+                  type="button"
+                  className="shrink-0 rounded-full px-3 py-1.5 text-[12px] font-medium whitespace-nowrap bg-terracotta text-white shadow-sm hover:bg-terracotta/90 active:scale-[0.97] transition-all disabled:opacity-50"
+                  disabled={headerAction.disabled}
+                  onClick={headerAction.onClick}
+                >
+                  {headerAction.label}
+                </button>
+              )}
+              {doneToday && (
+                <span className="chip-done !text-[10px] !py-0.5 !px-2 !gap-0.5">
+                  <IconCheck className="w-3 h-3" />
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         {selectedId !== 'free' && (
-          <p className="mt-2 text-[12px] text-muted leading-snug line-clamp-1">
+          <p className="mt-1.5 text-center text-[11px] text-muted leading-snug line-clamp-1 px-8">
             {selected.subtitle}
             <span className="text-faint"> · {selected.tradition}</span>
           </p>

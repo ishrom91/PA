@@ -30,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isPractices = location.pathname.startsWith('/practices');
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="h-dvh max-h-dvh flex flex-col md:flex-row md:h-auto md:max-h-none md:min-h-screen overflow-hidden md:overflow-visible">
       <NavigationTracker />
       {/* Desktop sidebar */}
       <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-40">
@@ -71,17 +71,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </aside>
 
       <main
-        className={`flex-1 md:ml-64 ${
-          isPractices
-            ? 'flex flex-col min-h-0 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8'
-            : 'pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8'
-        }`}
+        className={`relative z-0 flex-1 flex flex-col min-h-0 md:ml-64 ${
+          isPractices ? 'overflow-hidden' : 'overflow-y-auto'
+        } pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8`}
       >
         <div
-          className={`max-w-lg mx-auto w-full ${
-            isPractices
-              ? 'flex flex-col flex-1 min-h-0 md:px-6 md:py-8'
-              : 'px-4 py-5 md:py-8 md:px-6 animate-fade-in'
+          className={`max-w-lg mx-auto w-full flex-1 flex flex-col min-h-0 ${
+            isPractices ? 'md:px-6 md:py-8' : 'px-4 py-5 md:py-8 md:px-6 animate-fade-in'
           }`}
         >
           {children}
@@ -91,9 +87,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <UpdatePrompt />
       <InstallPrompt />
 
-      {/* Mobile tab bar — always above page content */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-[60] px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 pointer-events-none">
-        <div className="pointer-events-auto bg-surface/85 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-3xl shadow-nav dark:shadow-nav-dark border border-white/60 dark:border-white/10 flex items-stretch px-0.5 py-1">
+      {/* Mobile tab bar */}
+      <nav
+        aria-label="Основная навигация"
+        className="md:hidden fixed bottom-0 inset-x-0 z-[100] px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2"
+      >
+        <div className="bg-surface/90 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-3xl shadow-nav dark:shadow-nav-dark border border-white/60 dark:border-white/10 flex items-stretch px-0.5 py-1">
           {NAV_ITEMS.map(({ path, label, Icon }) => {
             const active = isActive(location.pathname, path);
             return (
