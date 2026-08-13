@@ -6,6 +6,7 @@ import { countIntegrated, getActiveRules } from '../utils/rules';
 import { IconCheck, IconChevron } from '../components/Icons';
 import Onboarding from '../components/Onboarding';
 import GuestSyncBanner from '../components/GuestSyncBanner';
+import DailyQuote from '../components/DailyQuote';
 
 export default function Dashboard() {
   const { ruleStatuses, todayEntry, saveVirtueIntention, onboardingCompleted, completeOnboarding } = useApp();
@@ -35,10 +36,9 @@ export default function Dashboard() {
       <header className="space-y-1">
         <p className="text-[13px] font-medium text-muted capitalize">{today}</p>
         <h1 className="page-title">Philosophia Activa</h1>
-        <p className="text-[15px] text-muted font-display italic leading-relaxed pt-1">
-          «Философия — это не музей. Это спортзал для разума.»
-        </p>
       </header>
+
+      <DailyQuote />
 
       <GuestSyncBanner />
 
