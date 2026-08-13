@@ -20,7 +20,7 @@ const GROUP_ORDER: PracticeGroup[] = ['morning', 'evening', 'day'];
 const DEFAULT_PRACTICE_ID: PracticeId = 'free';
 
 const FLOAT_CAPSULE =
-  'inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full text-[14px] font-medium whitespace-nowrap bg-surface/95 dark:bg-surface-dark/95 backdrop-blur-xl text-graphite dark:text-graphite-dark shadow-float dark:shadow-float-dark ring-1 ring-black/[0.06] dark:ring-white/[0.08] transition-all active:scale-[0.98]';
+  'flex items-center justify-center gap-1.5 h-9 px-4 rounded-full text-[14px] font-medium whitespace-nowrap bg-surface/95 dark:bg-surface-dark/95 backdrop-blur-xl text-graphite dark:text-graphite-dark shadow-float dark:shadow-float-dark ring-1 ring-black/[0.06] dark:ring-white/[0.08] transition-all active:scale-[0.98]';
 
 export default function PracticesPage() {
   const [params, setParams] = useSearchParams();
@@ -65,19 +65,20 @@ export default function PracticesPage() {
   return (
     <div className="flex flex-col flex-1 min-h-0 animate-fade-in">
       <header className="shrink-0 z-20 px-3 pt-2 pb-1 bg-transparent">
-        <div className="flex items-center justify-center gap-2 max-w-full">
+        <div className="flex w-full items-stretch gap-2">
           <PracticeModePicker
             selectedId={selectedId}
             onSelect={selectPractice}
             grouped={grouped}
             todayEntry={todayEntry}
             buttonClassName={FLOAT_CAPSULE}
+            className="flex-1 min-w-0"
           />
 
           {showSave && (
             <button
               type="button"
-              className={`${FLOAT_CAPSULE} shrink-0 disabled:opacity-40`}
+              className={`${FLOAT_CAPSULE} flex-1 min-w-0 disabled:opacity-40`}
               disabled={headerAction.disabled}
               onClick={headerAction.onClick}
             >
@@ -86,7 +87,10 @@ export default function PracticesPage() {
           )}
 
           {doneToday && (
-            <span className={`${FLOAT_CAPSULE} !px-3 shrink-0 text-olive`} aria-label="Сделано сегодня">
+            <span
+              className={`${FLOAT_CAPSULE} shrink-0 !flex-none !px-3 text-olive`}
+              aria-label="Сделано сегодня"
+            >
               <IconCheck className="w-4 h-4" />
             </span>
           )}

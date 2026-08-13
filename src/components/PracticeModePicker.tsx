@@ -15,6 +15,7 @@ interface PracticeModePickerProps {
   grouped: { group: PracticeGroup; label: string; items: PracticeDefinition[] }[];
   todayEntry?: JournalEntry;
   buttonClassName?: string;
+  className?: string;
 }
 
 export default function PracticeModePicker({
@@ -23,6 +24,7 @@ export default function PracticeModePicker({
   grouped,
   todayEntry,
   buttonClassName = '',
+  className = '',
 }: PracticeModePickerProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -63,7 +65,7 @@ export default function PracticeModePicker({
 
   return (
     <>
-      <div ref={rootRef} className="relative min-w-0 max-w-[11rem]">
+      <div ref={rootRef} className={`relative min-w-0 ${className}`}>
         <button
           type="button"
           className={`w-full ${buttonClassName}`}
@@ -82,7 +84,7 @@ export default function PracticeModePicker({
         {open && (
           <div
             role="listbox"
-            className="absolute left-1/2 -translate-x-1/2 top-[calc(100%+0.5rem)] z-[80] w-[min(100vw-2rem,20rem)] rounded-2xl bg-surface dark:bg-surface-dark shadow-float dark:shadow-float-dark ring-1 ring-black/[0.06] dark:ring-white/[0.08] overflow-hidden animate-slide-up"
+            className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-[80] rounded-2xl bg-surface dark:bg-surface-dark shadow-float dark:shadow-float-dark ring-1 ring-black/[0.06] dark:ring-white/[0.08] overflow-hidden animate-slide-up"
           >
             <div className="max-h-[min(52dvh,22rem)] overflow-y-auto py-1.5">
               <p className="px-3.5 pt-1 pb-1 text-[11px] font-medium text-faint">Наставник</p>
