@@ -1,10 +1,15 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { devApiPlugin } from './vite-plugin-dev-api';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+
+  return {
   plugins: [
     react(),
+    devApiPlugin(env),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon.svg', 'apple-touch-icon.png'],
@@ -57,4 +62,5 @@ export default defineConfig({
     host: true,
     open: true,
   },
+};
 });
