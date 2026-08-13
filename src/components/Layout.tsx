@@ -97,9 +97,9 @@ function MobileTabBar({ pathname }: { pathname: string }) {
   return (
     <nav
       aria-label="Основная навигация"
-      className="relative z-50 isolate md:hidden shrink-0 px-3 pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom))] bg-cream dark:bg-cream-dark"
+      className="md:hidden fixed bottom-0 inset-x-0 z-50 px-3 pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pointer-events-none"
     >
-      <div className="bg-surface/90 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-3xl shadow-nav dark:shadow-nav-dark border border-white/60 dark:border-white/10 flex items-stretch px-0.5 py-1">
+      <div className="pointer-events-auto bg-surface/90 dark:bg-surface-dark/90 backdrop-blur-2xl rounded-3xl shadow-nav dark:shadow-nav-dark border border-white/60 dark:border-white/10 flex items-stretch px-0.5 py-1">
         {NAV_ITEMS.map(({ path, label, Icon }) => (
           <NavItem
             key={path}
@@ -154,10 +154,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      {/* Mobile: main + tab bar — CSS grid keeps nav out of content hit area */}
-      <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_auto] md:contents">
+      {/* Mobile: main + floating tab bar (transparent wrapper, no bottom color strip) */}
+      <div className="flex min-h-0 flex-1 flex-col md:contents">
         <main
-          className={`min-h-0 md:ml-64 md:pb-8 ${
+          className={`min-h-0 md:ml-64 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8 ${
             isPractices ? 'overflow-hidden' : 'overflow-y-auto'
           }`}
         >
