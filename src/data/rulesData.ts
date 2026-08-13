@@ -18,7 +18,7 @@ export const RULES: RuleDefinition[] = [
     tradition: 'Аристотель',
     shortDescription: 'Перед финансовым шагом спроси: каким человеком это делает меня?',
     bookSectionId: 'rule-1',
-    practiceRoute: '/day',
+    practiceRoute: '/practices',
   },
   {
     number: 2,
@@ -51,7 +51,7 @@ export const RULES: RuleDefinition[] = [
     tradition: 'Мизес',
     shortDescription: 'Продавай не продукт, а субъективную выгоду для клиента.',
     bookSectionId: 'rule-5',
-    practiceRoute: '/morning',
+    practiceRoute: '/practices?p=morning',
   },
   {
     number: 6,
@@ -60,7 +60,7 @@ export const RULES: RuleDefinition[] = [
     tradition: 'Сократ',
     shortDescription: 'В споре — три вопроса, прежде чем ответить.',
     bookSectionId: 'rule-6',
-    practiceRoute: '/day',
+    practiceRoute: '/practices',
   },
   {
     number: 7,
@@ -69,7 +69,7 @@ export const RULES: RuleDefinition[] = [
     tradition: 'Витгенштейн',
     shortDescription: 'Перед беседой определи, какую игру вы играете.',
     bookSectionId: 'rule-7',
-    practiceRoute: '/day',
+    practiceRoute: '/practices',
   },
   {
     number: 8,
@@ -78,7 +78,7 @@ export const RULES: RuleDefinition[] = [
     tradition: 'Штейн',
     shortDescription: 'Опиши ситуацию глазами оппонента — без оценок.',
     bookSectionId: 'rule-8',
-    practiceRoute: '/day',
+    practiceRoute: '/practices',
   },
   {
     number: 9,
@@ -103,7 +103,7 @@ export const RULES: RuleDefinition[] = [
     tradition: 'Платон',
     shortDescription: 'Три оси: действия, тело, ум — были ли они целостны?',
     bookSectionId: 'rule-11',
-    practiceRoute: '/evening',
+    practiceRoute: '/practices?p=evening',
   },
   {
     number: 12,
@@ -112,7 +112,7 @@ export const RULES: RuleDefinition[] = [
     tradition: 'Аристотель',
     shortDescription: 'Каждый месяц — одна добродетель, каждый день — одно проявление.',
     bookSectionId: 'rule-12',
-    practiceRoute: '/morning',
+    practiceRoute: '/practices?p=morning',
   },
   {
     number: 13,
@@ -129,7 +129,7 @@ export const RULES: RuleDefinition[] = [
     tradition: 'Будда',
     shortDescription: 'Что я приукрасил сегодня — и почему?',
     bookSectionId: 'rule-14',
-    practiceRoute: '/evening',
+    practiceRoute: '/practices?p=evening',
   },
   {
     number: 15,
@@ -138,7 +138,7 @@ export const RULES: RuleDefinition[] = [
     tradition: 'Камю',
     shortDescription: 'Сделал бы я это, если бы никто не узнал?',
     bookSectionId: 'rule-15',
-    practiceRoute: '/evening',
+    practiceRoute: '/practices?p=evening',
   },
   {
     number: 16,

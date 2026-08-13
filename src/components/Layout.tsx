@@ -3,29 +3,27 @@ import { Link, useLocation } from 'react-router-dom';
 import InstallPrompt from './InstallPrompt';
 import {
   IconHome,
-  IconSun,
-  IconDay,
-  IconMoon,
+  IconPractice,
   IconMore,
   IconRules,
   IconBook,
   IconNotes,
   IconJournal,
   IconChevron,
+  IconProfile,
 } from './Icons';
 
 const PRIMARY_TABS = [
   { path: '/', label: 'Главная', Icon: IconHome },
-  { path: '/morning', label: 'Утро', Icon: IconSun },
-  { path: '/day', label: 'День', Icon: IconDay },
-  { path: '/evening', label: 'Вечер', Icon: IconMoon },
+  { path: '/practices', label: 'Практики', Icon: IconPractice },
+  { path: '/journal', label: 'Журнал', Icon: IconJournal },
+  { path: '/book', label: 'Книга', Icon: IconBook },
 ] as const;
 
 const MORE_ITEMS = [
   { path: '/rules', label: 'Правила', Icon: IconRules, desc: '17 практик книги' },
-  { path: '/book', label: 'Книга', Icon: IconBook, desc: 'Читалка с пометками' },
   { path: '/notes', label: 'Пометки', Icon: IconNotes, desc: 'Заметки к тексту' },
-  { path: '/journal', label: 'Журнал', Icon: IconJournal, desc: 'Записи по дням' },
+  { path: '/profile', label: 'Профиль', Icon: IconProfile, desc: 'Аккаунт и синхронизация' },
 ] as const;
 
 const DESKTOP_NAV = [
@@ -134,7 +132,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="absolute bottom-0 inset-x-0 bg-surface dark:bg-surface-dark rounded-t-4xl shadow-float dark:shadow-float-dark animate-slide-up pb-[calc(1rem+env(safe-area-inset-bottom))]">
             <div className="w-10 h-1 bg-paper rounded-full mx-auto mt-3 mb-4" />
             <p className="px-5 text-[13px] font-semibold uppercase tracking-wider text-muted mb-3">
-              Разделы
+              Справочник и настройки
             </p>
             <div className="px-3 space-y-1">
               {MORE_ITEMS.map(({ path, label, Icon, desc }) => (

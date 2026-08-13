@@ -5,6 +5,7 @@ import { RULES } from '../data/rulesData';
 import { countIntegrated, getActiveRules } from '../utils/rules';
 import { IconCheck, IconChevron } from '../components/Icons';
 import Onboarding from '../components/Onboarding';
+import GuestSyncBanner from '../components/GuestSyncBanner';
 
 export default function Dashboard() {
   const { ruleStatuses, todayEntry, saveVirtueIntention, onboardingCompleted, completeOnboarding } = useApp();
@@ -39,6 +40,8 @@ export default function Dashboard() {
         </p>
       </header>
 
+      <GuestSyncBanner />
+
       {/* Today ring + quick actions */}
       <section className="card overflow-hidden">
         <div className="flex items-center gap-5">
@@ -55,9 +58,9 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <PracticeChip done={morningDone} label="Утро" to="/morning" />
-              <PracticeChip done={dayDone} label="День" to="/day" />
-              <PracticeChip done={eveningDone} label="Вечер" to="/evening" />
+              <PracticeChip done={morningDone} label="Утро" to="/practices?p=morning" />
+              <PracticeChip done={dayDone} label="День" to="/practices" />
+              <PracticeChip done={eveningDone} label="Вечер" to="/practices?p=evening" />
             </div>
           </div>
         </div>

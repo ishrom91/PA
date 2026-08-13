@@ -47,6 +47,7 @@ export interface EmpathyEntry {
 
 export interface LanguageGameEntry {
   game: 'business' | 'emotional' | 'hierarchical' | 'friendly';
+  notes?: string;
   completedAt: string;
 }
 

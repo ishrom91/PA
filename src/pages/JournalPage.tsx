@@ -150,9 +150,13 @@ function DayDetail({ entry }: { entry: import('../types').JournalEntry }) {
           )}
           {entry.day.languageGame && (
             <Sub title="Языковая игра">
-              <p>
-                {LANGUAGE_GAMES.find((g) => g.id === entry.day!.languageGame!.game)?.label}
-              </p>
+              {entry.day.languageGame.notes ? (
+                <p className="whitespace-pre-wrap">{entry.day.languageGame.notes}</p>
+              ) : (
+                <p>
+                  {LANGUAGE_GAMES.find((g) => g.id === entry.day!.languageGame!.game)?.label}
+                </p>
+              )}
             </Sub>
           )}
         </Section>

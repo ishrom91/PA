@@ -23,7 +23,10 @@ function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export function useAppState() {
+export function useAppState(options?: {
+  onStorageChange?: (storage: AppStorage) => void;
+}) {
+  const onChange = options?.onStorageChange;
   const [storage, setStorage] = useLocalStorage<AppStorage>(
     STORAGE_KEY,
     { ...createInitialStorage(), onboardingCompleted: false },
@@ -41,9 +44,20 @@ export function useAppState() {
     [storage.journal, today],
   );
 
+  const persist = useCallback(
+    (value: AppStorage | ((prev: AppStorage) => AppStorage)) => {
+      setStorage((prev) => {
+        const next = value instanceof Function ? value(prev) : value;
+        onChange?.(next);
+        return next;
+      });
+    },
+    [setStorage, onChange],
+  );
+
   const upsertToday = useCallback(
     (patch: Partial<JournalEntry>) => {
-      setStorage((prev) => {
+      persist((prev) => {
         const idx = prev.journal.findIndex((e) => e.date === today);
         const existing = idx >= 0 ? prev.journal[idx] : { date: today };
         const updated = { ...existing, ...patch };
@@ -54,7 +68,7 @@ export function useAppState() {
         return { ...prev, journal };
       });
     },
-    [setStorage, today],
+    [persist, today],
   );
 
   const saveMorning = useCallback(
@@ -67,7 +81,7 @@ export function useAppState() {
 
   const saveDayPractice = useCallback(
     (key: keyof DayEntries, entry: DayEntries[keyof DayEntries]) => {
-      setStorage((prev) => {
+      persist((prev) => {
         const idx = prev.journal.findIndex((e) => e.date === today);
         const existing = idx >= 0 ? prev.journal[idx] : { date: today };
         const day = { ...existing.day, [key]: entry };
@@ -80,7 +94,7 @@ export function useAppState() {
       });
       hapticSuccess();
     },
-    [setStorage, today],
+    [persist, today],
   );
 
   const saveEvening = useCallback(
@@ -99,29 +113,29 @@ export function useAppState() {
   );
 
   const completeOnboarding = useCallback(() => {
-    setStorage((prev) => ({ ...prev, onboardingCompleted: true }));
-  }, [setStorage]);
+    persist((prev) => ({ ...prev, onboardingCompleted: true }));
+  }, [persist]);
 
   const activateRuleByNumber = useCallback(
     (n: number) => {
-      setStorage((prev) => ({
+      persist((prev) => ({
         ...prev,
         ruleStatuses: activateRule(prev.ruleStatuses, n),
       }));
       hapticSuccess();
     },
-    [setStorage],
+    [persist],
   );
 
   const integrateRuleByNumber = useCallback(
     (n: number) => {
-      setStorage((prev) => ({
+      persist((prev) => ({
         ...prev,
         ruleStatuses: integrateRule(prev.ruleStatuses, n),
       }));
       hapticSuccess();
     },
-    [setStorage],
+    [persist],
   );
 
   const addNote = useCallback(
@@ -131,24 +145,32 @@ export function useAppState() {
         id: generateId(),
         createdAt: new Date().toISOString(),
       };
-      setStorage((prev) => ({
+      persist((prev) => ({
         ...prev,
         notes: [newNote, ...prev.notes],
       }));
       hapticSuccess();
       return newNote.id;
     },
-    [setStorage],
+    [persist],
   );
 
   const removeNote = useCallback(
     (id: string) => {
-      setStorage((prev) => ({
+      persist((prev) => ({
         ...prev,
         notes: prev.notes.filter((n) => n.id !== id),
       }));
     },
-    [setStorage],
+    [persist],
+  );
+
+  const replaceStorage = useCallback(
+    (next: AppStorage) => {
+      setStorage(next);
+      onChange?.(next);
+    },
+    [setStorage, onChange],
   );
 
   const getEntryByDate = useCallback(
@@ -157,8 +179,8 @@ export function useAppState() {
   );
 
   const refreshJournal = useCallback(() => {
-    setStorage((prev) => ({ ...prev, journal: [...prev.journal] }));
-  }, [setStorage]);
+    persist((prev) => ({ ...prev, journal: [...prev.journal] }));
+  }, [persist]);
 
   return {
     storage,
@@ -176,6 +198,7 @@ export function useAppState() {
     removeNote,
     getEntryByDate,
     refreshJournal,
+    replaceStorage,
     journal: storage.journal,
     notes: storage.notes,
     onboardingCompleted: storage.onboardingCompleted ?? false,

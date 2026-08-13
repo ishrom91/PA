@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import StepActions from './StepActions';
 import { hapticLight, hapticSuccess } from '../utils/haptics';
 
 interface OnboardingProps {
@@ -34,8 +35,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   };
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-cream-dark flex flex-col px-6 pt-[max(2.5rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))]">
-      <div className="flex gap-2 mb-10">
+    <div className="pb-6">
+      <div className="flex gap-2 mb-8">
         {SLIDES.map((_, i) => (
           <div
             key={i}
@@ -53,7 +54,6 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -12 }}
           transition={{ duration: 0.3 }}
-          className="flex-1 flex flex-col"
         >
           <p className="text-[13px] font-semibold uppercase tracking-wider text-terracotta mb-3">
             {step + 1} / {SLIDES.length}
@@ -67,23 +67,23 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           <blockquote className="mt-8 text-[15px] italic text-graphite-secondary dark:text-graphite-secondary-dark border-l-[3px] border-terracotta/40 pl-4 py-1 font-display">
             {slide.quote}
           </blockquote>
+
+          <StepActions stack>
+            <button type="button" className="btn-primary w-full" onClick={next}>
+              {step < SLIDES.length - 1 ? 'Далее' : 'Начать'}
+            </button>
+            {step > 0 && (
+              <button
+                type="button"
+                className="btn-secondary w-full"
+                onClick={() => { hapticLight(); setStep(step - 1); }}
+              >
+                Назад
+              </button>
+            )}
+          </StepActions>
         </motion.div>
       </AnimatePresence>
-
-      <div className="space-y-3 mt-8">
-        <button type="button" className="btn-primary w-full" onClick={next}>
-          {step < SLIDES.length - 1 ? 'Далее' : 'Начать'}
-        </button>
-        {step > 0 && (
-          <button
-            type="button"
-            className="btn-secondary w-full"
-            onClick={() => { hapticLight(); setStep(step - 1); }}
-          >
-            Назад
-          </button>
-        )}
-      </div>
     </div>
   );
 }

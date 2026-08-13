@@ -11,17 +11,9 @@ const ROUTE_META: Record<string, { title: string; description: string }> = {
     title: `${SITE} — дневник практик`,
     description: DEFAULT_DESC,
   },
-  '/morning': {
-    title: `Утренняя практика · ${SITE}`,
-    description: 'Дихотомия контроля, субъективная ценность, добродетель дня — три шага утреннего ритуала.',
-  },
-  '/day': {
-    title: `Дневные практики · ${SITE}`,
-    description: 'Phronesis, три уточняющих вопроса, эмпатия, языковая игра — практики в момент события.',
-  },
-  '/evening': {
-    title: `Вечерняя практика · ${SITE}`,
-    description: 'Гармония дня, осознанность искажений, аутентичность — вечерний ритуал.',
+  '/practices': {
+    title: `Практики · ${SITE}`,
+    description: 'Чат с наставником: утро, вечер и ситуативные инструменты — Phronesis, эмпатия, языковая игра.',
   },
   '/rules': {
     title: `17 правил · ${SITE}`,
