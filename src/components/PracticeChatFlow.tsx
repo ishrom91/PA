@@ -21,6 +21,15 @@ export interface PracticeHeaderAction {
   onClick: () => void;
 }
 
+export interface PracticeChatState {
+  hasUserReply: boolean;
+  saved: boolean;
+  stepIndex: number;
+  stepCount: number;
+  currentStepTitle: string;
+  nextStepTitle?: string;
+}
+
 interface PracticeChatFlowProps {
   pageTitle?: string;
   pageSubtitle?: string;
@@ -32,6 +41,7 @@ interface PracticeChatFlowProps {
   fillHeight?: boolean;
   saveInHeader?: boolean;
   onHeaderAction?: (action: PracticeHeaderAction) => void;
+  onChatStateChange?: (state: PracticeChatState) => void;
   savedHint?: string;
 }
 
@@ -84,6 +94,7 @@ export default function PracticeChatFlow({
   fillHeight = false,
   saveInHeader = false,
   onHeaderAction,
+  onChatStateChange,
   savedHint = 'Записано в журнал',
 }: PracticeChatFlowProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -186,8 +197,32 @@ export default function PracticeChatFlow({
     embedded,
   ]);
 
+  const nextStep = !isLast ? steps[stepIndex + 1] : undefined;
   const saveLabel =
-    lastAssistantText.includes('Записать это в журнал') || isLast ? 'В журнал' : 'Далее';
+    lastAssistantText.includes('Записать это в журнал') || isLast
+      ? 'В журнал'
+      : nextStep
+        ? `Далее · ${nextStep.title}`
+        : 'Далее';
+
+  useEffect(() => {
+    onChatStateChange?.({
+      hasUserReply,
+      saved,
+      stepIndex,
+      stepCount: steps.length,
+      currentStepTitle: current.title,
+      nextStepTitle: nextStep?.title,
+    });
+  }, [
+    onChatStateChange,
+    hasUserReply,
+    saved,
+    stepIndex,
+    steps.length,
+    current.title,
+    nextStep?.title,
+  ]);
 
   useEffect(() => {
     if (!saveInHeader || !onHeaderAction) return;
@@ -206,6 +241,12 @@ export default function PracticeChatFlow({
     saved,
     handleStepComplete,
   ]);
+
+  const inputPlaceholder = saved
+    ? 'Выберите другую практику или начните заново…'
+    : saveInHeader && !hasUserReply
+      ? 'Ответьте наставнику — затем «В журнал»'
+      : 'Сообщение…';
 
   if (finished && !embedded) {
     return (
@@ -265,12 +306,18 @@ export default function PracticeChatFlow({
         )}
 
         {embedded && steps.length > 1 && (
-          <div className="shrink-0 px-4 pt-2.5 pb-1">
-            <StepProgress compact current={stepIndex + 1} total={steps.length} />
+          <div className="shrink-0 px-3 pt-2.5 pb-1">
+            <StepProgress
+              compact
+              showCaption
+              current={stepIndex + 1}
+              total={steps.length}
+              labels={steps.map((s) => s.title)}
+            />
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0 scroll-smooth">
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-4 min-h-0 scroll-smooth">
           {messages.map((m) => {
             const text = getMessageText(m);
             const isUser = m.role === 'user';
@@ -335,7 +382,7 @@ export default function PracticeChatFlow({
               className="flex-1 min-w-0 bg-transparent border-0 py-2.5 text-[15px] text-graphite dark:text-graphite-dark placeholder:text-graphite-tertiary dark:placeholder:text-graphite-tertiary-dark focus:outline-none"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={saved ? 'Выберите другую практику…' : 'Сообщение…'}
+              placeholder={inputPlaceholder}
               disabled={isLoading || saved}
             />
             <button

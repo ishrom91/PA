@@ -59,7 +59,7 @@ export default function Dashboard() {
             </div>
             <div className="flex flex-wrap gap-2">
               <PracticeChip done={morningDone} label="Утро" to="/practices?p=morning" />
-              <PracticeChip done={dayDone} label="День" to="/practices" />
+              <PracticeChip done={dayDone} label="День" to="/practices?group=day" />
               <PracticeChip done={eveningDone} label="Вечер" to="/practices?p=evening" />
             </div>
           </div>
