@@ -30,7 +30,6 @@ interface PracticeChatFlowProps {
   doneSubtitle?: string;
   embedded?: boolean;
   fillHeight?: boolean;
-  headerInset?: boolean;
   saveInHeader?: boolean;
   onHeaderAction?: (action: PracticeHeaderAction) => void;
   savedHint?: string;
@@ -83,7 +82,6 @@ export default function PracticeChatFlow({
   doneSubtitle = 'Диалог сохранён в журнал',
   embedded = false,
   fillHeight = false,
-  headerInset = false,
   saveInHeader = false,
   onHeaderAction,
   savedHint = 'Записано в журнал',
@@ -252,7 +250,7 @@ export default function PracticeChatFlow({
       <div
         className={
           embedded
-            ? `flex flex-col flex-1 min-h-0${headerInset ? ' pt-12' : ''}`
+            ? 'flex flex-col flex-1 min-h-0'
             : 'flex flex-col min-h-[calc(100dvh-13rem)] md:min-h-[520px] card !p-0 overflow-hidden'
         }
       >

@@ -63,9 +63,9 @@ export default function PracticesPage() {
   const showSave = headerAction && !headerAction.hidden;
 
   return (
-    <div className="relative flex flex-col flex-1 min-h-0 animate-fade-in">
-      <div className="absolute inset-x-0 top-0 z-20 pt-2 px-3 flex justify-center pointer-events-none">
-        <div className="pointer-events-auto flex items-center gap-2 max-w-full">
+    <div className="flex flex-col flex-1 min-h-0 animate-fade-in">
+      <header className="shrink-0 z-20 px-3 pt-2 pb-1 bg-transparent">
+        <div className="flex items-center justify-center gap-2 max-w-full">
           <PracticeModePicker
             selectedId={selectedId}
             onSelect={selectPractice}
@@ -91,13 +91,12 @@ export default function PracticesPage() {
             </span>
           )}
         </div>
-      </div>
+      </header>
 
       <PracticeChatFlow
         key={`${selectedId}-${chatKey}`}
         embedded
         fillHeight
-        headerInset
         saveInHeader
         onHeaderAction={setHeaderAction}
         steps={selected.getSteps()}
